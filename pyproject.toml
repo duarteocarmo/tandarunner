@@ -1,0 +1,33 @@
+[project]
+name = "tandarunner"
+version = "24.4.13"
+description = "A nice description"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["django", "django-allauth[socialaccount]", "stravalib"]
+
+[tool.setuptools]
+packages = ["config", "tandarunner"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov", "ruff", "watchdog", "httpx"]
+
+[tool.ruff]
+exclude = [".env", ".venv", "venv", "notebooks"]
+line-length = 79
+
+[tool.ruff.lint]
+ignore = ["E501"]
+select = ["E", "F", "I", "W"]
+fixable = ["I", "F"]
+
+[tool.coverage.paths]
+source = ["src"]
+
+[tool.coverage.run]
+branch = true
+relative_files = true
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
