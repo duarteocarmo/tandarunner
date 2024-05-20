@@ -4,129 +4,20 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="color-scheme" content="light dark" />
+
 	<title>Tanda Assistant</title>
-	<style>
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-		}
+
+	{% load static %}
+
+	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+	<script src="{% static 'js/index.js' %}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vega@5.28.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vega-lite@5.18.1"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.25.0"></script>
 
 
 
-		.vega-actions {
-			display: none;
-		}
-
-		body {
-			font-family: system-ui;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
-			min-height: 100vh;
-			margin: 0;
-		}
-
-		.container {
-			display: flex;
-			flex-direction: column;
-			width: 90%;
-			max-width: 1200px;
-			overflow: hidden;
-			border: 1px solid #d0d0d0;
-			margin-top: 20px;
-			margin-bottom: 20px;
-		}
-
-		.header {
-			text-align: center;
-			padding: 20px;
-			border-bottom: 1px solid #d0d0d0;
-		}
-
-		.header h1 {
-			font-size: 2rem;
-			margin-bottom: 10px;
-		}
-
-		.header p {
-			font-size: 1rem;
-			color: #555;
-		}
-
-		.main-content-container {
-			display: flex;
-			flex-direction: row;
-		}
-
-		.main-content {
-			width: 60%;
-			padding: 20px;
-		}
-
-		.visualization {
-			padding: 20px;
-			border-radius: 5px;
-			height: calc(85vh);
-			/* Adjusted for header height */
-			overflow-y: auto;
-			border: 1px solid black;
-		}
-
-		.visualization img {
-			width: 100%;
-		}
-
-		.sidebar {
-			width: 40%;
-			color: #000;
-			padding: 20px;
-			border: 1px solid black;
-		}
-
-		.chat-box {
-			padding: 10px;
-			border-radius: 5px;
-			height: calc(85vh);
-			/* Adjusted for header height */
-			overflow-y: auto;
-			border: 1px solid black;
-		}
-
-		@media (max-width: 768px) {
-			.main-content-container {
-				flex-direction: column;
-				width: 100%;
-				margin: 0;
-			}
-
-			.main-content,
-			.sidebar {
-				width: 100%;
-			}
-
-			.visualization {
-				max-height: calc(50vh);
-			}
-
-			.chat-box {
-				max-height: calc(30vh);
-			}
-		}
-
-
-		@media (prefers-color-scheme: dark) {
-			.loading {
-				--loading-color-1: #22222200;
-				--loading-color-2: #222222ff;
-			}
-
-			.popover-content {
-				background-color: black;
-			}
-		}
-	</style>
 </head>
 
 <body>
@@ -134,18 +25,19 @@
 		<header class="header">
 			<h1>Tanda Assistant</h1>
 			<p>Your personal data visualization and chat assistant</p>
-			
+
 			{% load socialaccount %}
-				<!-- {% get_providers as socialaccount_providers %} -->
-				<a href="{% provider_login_url "strava" %}">Strava</a>
+			<a href="{% provider_login_url 'strava' %}">Strava</a>
+			{{ visualizations|json_script:"visualizations" }}
 
 		</header>
 		<div class="main-content-container">
 			<main class="main-content">
 				<div class="visualization">
-					<img src="https://placehold.co/300x200" alt="Line Chart">
-					<img src="https://placehold.co/300x200" alt="Bar Chart">
-					<img src="https://placehold.co/300x200" alt="Pie Chart">
+					<div id="weekly_chart">Visualization 1</div>
+					<div id="rolling_tanda">Visualization 2</div>
+					<div id="marathon_predictor">Visualization 2</div>
+
 				</div>
 			</main>
 			<aside class="sidebar">

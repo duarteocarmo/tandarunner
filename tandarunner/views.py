@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from tandarunner.helpers import get_athlete, refresh_token
+from tandarunner.visualizations import get_visualizations
 
 logger = logging.getLogger(__name__)
 
@@ -18,15 +19,17 @@ def index(request: HttpRequest) -> HttpResponse:
     if not user.is_authenticated:
         return TemplateResponse(request, "index.html")
 
-    print("User is authenticated: ", user)
-
     access_token = SocialToken.objects.filter(
         account__user=user, account__provider="strava"
     ).last()
     if access_token.expires_at <= timezone.now():
         refresh_token(access_token)
 
-    athlete = get_athlete(access_token)
-    print("Athlete name: ", athlete.firstname, athlete.lastname)
-
-    return TemplateResponse(request, "index.html")
+    return TemplateResponse(
+        request,
+        "index.html",
+        {
+            "athlete": get_athlete(access_token),
+            "visualizations": get_visualizations(access_token.token),
+        },
+    )

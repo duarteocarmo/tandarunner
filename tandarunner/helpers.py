@@ -1,21 +1,22 @@
 from datetime import timedelta
 
 import requests
-from allauth.socialaccount.models import SocialApp
+from django.conf import settings
 from django.utils import timezone
 from stravalib import Client
 
 
 def refresh_token(access_token):
     """Refreshes a user's Strava access token"""
-    strava = SocialApp.objects.get(provider="strava")
 
-    if not strava:
-        raise Exception("Unable to load strava secrets while refreshing token")
+    strava_client_id = settings.SOCIALACCOUNT_PROVIDERS["strava"]["APP"][
+        "client_id"
+    ]
+    strava_secret = settings.SOCIALACCOUNT_PROVIDERS["strava"]["APP"]["secret"]
 
     params = {
-        "client_id": strava.client_id,
-        "client_secret": strava.secret,
+        "client_id": strava_client_id,
+        "client_secret": strava_secret,
         "grant_type": "refresh_token",
         "refresh_token": access_token.token_secret,
     }
