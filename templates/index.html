@@ -1,46 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-{% load static %}
-{% load socialaccount %}
-
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="color-scheme" content="light dark" />
-
-	<title>Tanda Assistant</title>
-	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
-	<script src="{% static 'js/index.js' %}"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vega@5.28.0"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vega-lite@5.18.1"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.25.0"></script>
-</head>
-
-<body>
-	<div class="container">
-		<header class="header">
-			<h1>Tanda Assistant</h1>
-			<p>Your personal data visualization and chat assistant</p>
-
-			<a href="{% provider_login_url 'strava' %}">Strava</a>
-			{{ visualizations|json_script:"visualizations" }}
-
-		</header>
-		<div class="main-content-container">
-			<main class="main-content">
-				<div class="visualization">
-					<div id="weekly_chart">Visualization 1</div>
-					<div id="rolling_tanda">Visualization 2</div>
-					<div id="marathon_predictor">Visualization 2</div>
-
-				</div>
-			</main>
-			<aside class="sidebar">
-				<div class="chat-box">
-				</div>
-			</aside>
-		</div>
-	</div>
-</body>
-
+    {% load static %}
+    {% load socialaccount %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="color-scheme" content="light dark" />
+        <title>Tanda Assistant</title>
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <script src="{% static 'js/index.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega@5.28.0"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.18.1"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.25.0"></script>
+    </head>
+    <body>
+        <div class="container">
+            <header class="header">
+                <h1>Tanda Assistant</h1>
+                <p>Your personal data visualization and chat assistant</p>
+                <a href="{% provider_login_url 'strava' %}">Strava</a>
+                {{ visualizations|json_script:"visualizations" }}
+            </header>
+            <div class="main-content-container">
+                <main class="main-content">
+                    <div class="visualization">
+                        <div id="weekly_chart">Visualization 1</div>
+                        <div id="rolling_tanda">Visualization 2</div>
+                        <div id="marathon_predictor">Visualization 2</div>
+                    </div>
+                </main>
+                <aside class="sidebar">
+                    <div class="chat-box">
+                        <div class="chat-messages">
+                            <div class="chat-message is-system">
+                                <img src="{% static 'icons/robot-face.png' %}"
+                                     alt="System Logo"
+                                     class="logo">
+                                Hi! I'm your Tanda Assistant, here to help you with any questions about your training!
+                            </div>
+                            <div class="chat-message ">
+                                <img src="{% static 'icons/run.png' %}" alt="System Logo" class="logo">
+                                How is my mileage increasing? What things should I focus on while increasing my mileage?
+                            </div>
+                        </div>
+                        <div>
+                            <textarea placeholder="Say something..."
+                                      rows="2"
+                                      type="text"
+                                      class="textarea"
+                                      id="textarea"
+                                      value="${message}"></textarea>
+                        </div>
+                        <div class="right">
+                            <button type="submit">Send</button>
+                            <button onclick=${stop} >Stop</button>
+                            <button onclick=${reset}>Reset</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </body>
 </html>
