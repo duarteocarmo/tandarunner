@@ -12,6 +12,7 @@ dependencies = [
   "pandas",
   "numpy",
   "whitenoise",
+  "channels[daphne]",
 ]
 
 [tool.setuptools]

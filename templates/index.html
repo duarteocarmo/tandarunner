@@ -12,14 +12,20 @@
         <script src="https://cdn.jsdelivr.net/npm/vega@5.28.0"></script>
         <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.18.1"></script>
         <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.25.0"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.12"
+                integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+                crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
     </head>
-    <body>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <div class="container">
             <header class="header">
                 <h1>Tanda Assistant</h1>
                 <p>Your personal data visualization and chat assistant</p>
-                <a href="{% provider_login_url 'strava' %}">Strava</a>
                 {{ visualizations|json_script:"visualizations" }}
+                <a href="{% provider_login_url 'strava' %}" class="strava-login">
+                    <img src="{% static 'icons/strava.png' %}" alt="Login with Strava">
+                </a>
             </header>
             <div class="main-content-container">
                 <main class="main-content">
@@ -30,8 +36,8 @@
                     </div>
                 </main>
                 <aside class="sidebar">
-                    <div class="chat-box">
-                        <div class="chat-messages">
+                    <div class="chat-box" hx-ext="ws" ws-connect="/ws/chat/">
+                        <div class="chat-messages" id="message-list">
                             <div class="chat-message is-system">
                                 <img src="{% static 'icons/robot-face.png' %}"
                                      alt="System Logo"
@@ -43,19 +49,20 @@
                                 How is my mileage increasing? What things should I focus on while increasing my mileage?
                             </div>
                         </div>
-                        <div>
-                            <textarea placeholder="Say something..."
-                                      rows="2"
-                                      type="text"
-                                      class="textarea"
-                                      id="textarea"
-                                      value="${message}"></textarea>
-                        </div>
-                        <div class="right">
-                            <button type="submit">Send</button>
-                            <button onclick=${stop} >Stop</button>
-                            <button onclick=${reset}>Reset</button>
-                        </div>
+                        <form id="form" ws-send>
+                            <div>
+                                <textarea name="message"
+                                          placeholder="Say something..."
+                                          rows="3"
+                                          class="textarea"
+                                          id="messageinput"></textarea>
+                            </div>
+                            <div class="right">
+                                <button type="submit">Send</button>
+                                <button type="button" onclick="${stop}">Stop</button>
+                                <button type="button" onclick="${reset}">Reset</button>
+                            </div>
+                        </form>
                     </div>
                 </aside>
             </div>

@@ -29,3 +29,7 @@ Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-sta
 ```shell
 (.env) $ make help
 ```
+
+## TODO 
+
+- [ ] Chat send on enter

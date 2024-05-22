@@ -1,0 +1,7 @@
+{% load static %}
+<div class="chat-messages" id="message-list" hx-swap-oob="beforeend">
+    <div class="chat-message is-system">
+        <img src="/static/icons/robot-face.png" alt="System Logo" class="logo">
+        {{ message_text }}
+    </div>
+</div>
