@@ -32,4 +32,4 @@ Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-sta
 
 ## TODO 
 
-- [ ] Chat send on enter
+- [x] Chat send on enter

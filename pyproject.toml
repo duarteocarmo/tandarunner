@@ -14,6 +14,7 @@ dependencies = [
   "whitenoise",
   "channels[daphne]",
   "django-debug-toolbar",
+  "litellm",
 ]
 
 

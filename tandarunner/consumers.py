@@ -3,6 +3,7 @@ import uuid
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.template.loader import render_to_string
+from litellm import acompletion, stream_chunk_builder
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -13,7 +14,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message_text = text_data_json["message"]
-        self.messages.append({"message": message_text, "role": "user"})
+        self.messages.append({"content": message_text, "role": "user"})
 
         user_message_html = render_to_string(
             "partials/message.html",
@@ -31,13 +32,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
             },
         )
         await self.send(text_data=system_message_html)
-        response = f"User said: {message_text}"
 
-        for chunk in response.split(" "):
-            chunk += " "
+        response = await acompletion(
+            model="gpt-3.5-turbo",
+            messages=self.messages,
+            stream=True,
+        )
+
+        chunks = []
+        async for chunk in response:
+            text = chunk.choices[0].delta.content or ""
             await self.send(
-                text_data=f'<div id="{message_id}" hx-swap-oob="beforeend">{chunk}</div>'
+                text_data=f'<div id="{message_id}" hx-swap-oob="beforeend">{text}</div>'
             )
+            chunks.append(chunk)
 
-        self.messages.append({"message": response, "role": "system"})
+        system_message = (
+            stream_chunk_builder(chunks, messages=self.messages)
+            .choices[0]
+            .message.content
+        )
+
+        self.messages.append(
+            {
+                "content": system_message,
+                "role": "system",
+            }
+        )
         print(self.messages)
