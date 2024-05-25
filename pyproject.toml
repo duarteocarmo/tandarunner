@@ -13,7 +13,9 @@ dependencies = [
   "numpy",
   "whitenoise",
   "channels[daphne]",
+  "django-debug-toolbar",
 ]
+
 
 [tool.setuptools]
 packages = ["config", "tandarunner"]

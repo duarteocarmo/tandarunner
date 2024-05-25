@@ -20,12 +20,22 @@
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <div class="container">
             <header class="header">
-                <h1>Tanda Assistant</h1>
-                <p>Your personal data visualization and chat assistant</p>
+                <div style="display: flex;
+                            justify-content: space-between;
+                            align-items: flex-start">
+                    <div>
+                        <h1>Tanda Assistant</h1>
+                        <!-- <p>Your personal data visualization and chat assistant</p> -->
+                    </div>
+                    <a href="{% provider_login_url 'strava' %}"
+                       class="strava-login"
+                       style="display: block">
+                        <img src="{% static 'icons/strava.png' %}"
+                             alt="Login with Strava"
+                             class="strava-logo" />
+                    </a>
+                </div>
                 {{ visualizations|json_script:"visualizations" }}
-                <a href="{% provider_login_url 'strava' %}" class="strava-login">
-                    <img src="{% static 'icons/strava.png' %}" alt="Login with Strava">
-                </a>
             </header>
             <div class="main-content-container">
                 <main class="main-content">
@@ -38,27 +48,28 @@
                 <aside class="sidebar">
                     <div class="chat-box" hx-ext="ws" ws-connect="/ws/chat/">
                         <div class="chat-messages" id="message-list">
-                            <div class="chat-message is-system">
-                                <img src="{% static 'icons/robot-face.png' %}"
-                                     alt="System Logo"
-                                     class="logo">
+                            <div class="chat-message">
+                                <img src="{% static 'icons/robot-face.png' %}" class="logo">
                                 Hi! I'm your Tanda Assistant, here to help you with any questions about your training!
                             </div>
-                            <div class="chat-message ">
-                                <img src="{% static 'icons/run.png' %}" alt="System Logo" class="logo">
+                            <div class="chat-message">
+                                <img src="{% static 'icons/run.png' %}"  class="logo">
                                 How is my mileage increasing? What things should I focus on while increasing my mileage?
                             </div>
                         </div>
-                        <form id="form" ws-send>
+                        <form id="form"
+                              ws-send
+                              hx-trigger="keyup[key=='Enter'&&!shiftKey], click from:#sendMessage">
                             <div>
                                 <textarea name="message"
                                           placeholder="Say something..."
                                           rows="3"
                                           class="textarea"
+                                          hx-trigger="keyup[key=='Enter'&&!shiftKey]"
                                           id="messageinput"></textarea>
                             </div>
                             <div class="right">
-                                <button type="submit">Send</button>
+                                <button type="submit" id="sendMessage">Send</button>
                                 <button type="button" onclick="${stop}">Stop</button>
                                 <button type="button" onclick="${reset}">Reset</button>
                             </div>

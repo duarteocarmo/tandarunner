@@ -1,7 +1,7 @@
 * {
   /* margin: 0; */
   /* padding: 0; */
-  /* box-sizing: border-box; */
+  box-sizing: border-box;
   /* border: 0.5px solid black; */
 }
 
@@ -15,7 +15,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 80vh;
   margin: 0;
   font-size: 90%;
 }
@@ -30,9 +30,17 @@ body {
   margin-bottom: 5px;
 }
 
+button {
+  line-height: 1.2;
+}
+
+.strava-logo {
+  height: 35px;
+}
+
 .header {
   text-align: left;
-  padding: 10px;
+  padding: 10px 20px;
 }
 
 .main-content-container {
@@ -64,17 +72,16 @@ body {
 .chat-box {
   padding: 10px;
   border-radius: 5px;
-  height: calc(80vh);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
+  height: 80vh; /* assuming you want it to take the full height of the viewport */
 }
 
 .chat-messages {
   flex-grow: 1;
-  overflow-y: auto;
+  overflow-y: auto; /* show vertical scrollbar only when needed */
 }
 
 .chat-message img.logo {

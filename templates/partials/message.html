@@ -1,7 +1,12 @@
 {% load static %}
 <div class="chat-messages" id="message-list" hx-swap-oob="beforeend">
-    <div class="chat-message is-system">
-        <img src="/static/icons/robot-face.png" alt="System Logo" class="logo">
+    <div class="chat-message"
+         {% if message_id %}id="{{ message_id }}"{% endif %}>
+        {% if is_system %}
+            <img src="{% static 'icons/robot-face.png' %}" class="logo">
+        {% else %}
+            <img src="{% static 'icons/run.png' %}" class="logo">
+        {% endif %}
         {{ message_text }}
     </div>
 </div>

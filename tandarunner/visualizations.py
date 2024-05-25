@@ -175,9 +175,6 @@ def viz_weekly_chart(
             y=y,
             tooltip=["start_date:T", "distance_km:Q"],
         )
-        .properties(
-            width=800, height=500, title="Running distance per week (km)"
-        )
     )
 
     # Text labels for each point
@@ -195,7 +192,7 @@ def viz_weekly_chart(
         (line_chart + text_labels)
         .properties(
             width="container",
-            height=250,
+            height=150,
             title="Running distance per week (km)",
         )
         .interactive()
