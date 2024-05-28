@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.strava",
     "debug_toolbar",
+    "tandarunner",
 ]
 
 MIDDLEWARE = [

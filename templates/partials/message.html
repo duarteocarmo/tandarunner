@@ -1,12 +1,12 @@
 {% load static %}
+{% load markdown_extras %}
 <div class="chat-messages" id="message-list" hx-swap-oob="beforeend">
-    <div class="chat-message"
-         {% if message_id %}id="{{ message_id }}"{% endif %}>
+    <div class="chat-message">
         {% if is_system %}
             <img src="{% static 'icons/robot-face.png' %}" class="logo">
         {% else %}
             <img src="{% static 'icons/run.png' %}" class="logo">
         {% endif %}
-        {{ message_text }}
+        <div {% if message_id %}id="{{ message_id }}"{% endif %}>{{ message_text|markdown|safe }}</div>
     </div>
 </div>

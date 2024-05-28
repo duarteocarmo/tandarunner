@@ -2,6 +2,7 @@
 <html lang="en">
     {% load static %}
     {% load socialaccount %}
+    {% load markdown_extras %}
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,10 +52,6 @@
                             <div class="chat-message">
                                 <img src="{% static 'icons/robot-face.png' %}" class="logo">
                                 Hi! I'm your Tanda Assistant, here to help you with any questions about your training!
-                            </div>
-                            <div class="chat-message">
-                                <img src="{% static 'icons/run.png' %}"  class="logo">
-                                How is my mileage increasing? What things should I focus on while increasing my mileage?
                             </div>
                         </div>
                         <form id="form"

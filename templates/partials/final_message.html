@@ -1,0 +1,5 @@
+{% load static %}
+{% load markdown_extras %}
+<div id="{{ message_id}}" hx-swap-oob="true">
+    {{ message_text|markdown|safe }}
+</div>

@@ -15,6 +15,7 @@ dependencies = [
   "channels[daphne]",
   "django-debug-toolbar",
   "litellm",
+  "markdown",
 ]
 
 

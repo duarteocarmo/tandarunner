@@ -42,21 +42,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
         chunks = []
         async for chunk in response:
             text = chunk.choices[0].delta.content or ""
+            text = text.replace("\n", "<br>")
             await self.send(
-                text_data=f'<div id="{message_id}" hx-swap-oob="beforeend">{text}</div>'
+                text_data=f"""<div id='{message_id}' hx-swap-oob="beforeend">{text}</div>"""
             )
             chunks.append(chunk)
 
-        system_message = (
+        final_message = (
             stream_chunk_builder(chunks, messages=self.messages)
             .choices[0]
             .message.content
         )
+        final_message_rendered = render_to_string(
+            "partials/final_message.html",
+            {
+                "message_text": final_message,
+                "message_id": message_id,
+            },
+        )
+
+        await self.send(text_data=final_message_rendered)
 
         self.messages.append(
             {
-                "content": system_message,
+                "content": final_message,
                 "role": "system",
             }
         )
-        print(self.messages)
