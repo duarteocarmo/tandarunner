@@ -36,3 +36,14 @@ document.addEventListener("htmx:wsAfterMessage", function () {
   const chatUI = document.getElementById("message-list");
   chatUI.scrollTop = chatUI.scrollHeight;
 });
+
+// send stop message to server
+const socket = new WebSocket("ws://" + window.location.host + "/ws/chat/");
+document.addEventListener("DOMContentLoaded", function () {
+  stop_button = document.getElementById("stopMessage");
+
+  stop_button.addEventListener("click", function () {
+    socket.send(JSON.stringify({ action: "stop" }));
+    console.log("stop message sent");
+  });
+});
