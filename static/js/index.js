@@ -37,13 +37,38 @@ document.addEventListener("htmx:wsAfterMessage", function () {
   chatUI.scrollTop = chatUI.scrollHeight;
 });
 
-// send stop message to server
-const socket = new WebSocket("ws://" + window.location.host + "/ws/chat/");
+// handle state and cancellation while generating
+const state = {
+  allowSwaps: true,
+  generating: false,
+};
 document.addEventListener("DOMContentLoaded", function () {
-  stop_button = document.getElementById("stopMessage");
-
-  stop_button.addEventListener("click", function () {
-    socket.send(JSON.stringify({ action: "stop" }));
-    console.log("stop message sent");
+  document.getElementById("stopMessage").addEventListener("click", function () {
+    if (state.generating) {
+      state.allowSwaps = false;
+    }
   });
+});
+document.addEventListener("htmx:oobBeforeSwap", function (event) {
+  state.generating = true;
+
+  const messageInput = document.getElementById("messageinput");
+  const sendMessage = document.getElementById("sendMessage");
+
+  messageInput.classList.add("loading");
+  sendMessage.disabled = true;
+  messageInput.disabled = true;
+
+  if (!state.allowSwaps) {
+    event.preventDefault();
+  }
+
+  if (event.detail.fragment.attributes === undefined) {
+    state.allowSwaps = true;
+    messageInput.classList.remove("loading");
+    sendMessage.disabled = false;
+    messageInput.disabled = false;
+    messageInput.focus();
+    state.generating = false;
+  }
 });

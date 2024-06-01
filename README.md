@@ -33,3 +33,5 @@ Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-sta
 ## TODO 
 
 - [x] Chat send on enter
+- [ ] Loading on send
+- [ ] Clear conversation

@@ -9,15 +9,14 @@ from litellm import acompletion, stream_chunk_builder
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.messages = []
-        self.cancelled = False
         await super().connect()
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
+        print(f"Received: {text_data_json}")
 
-        if text_data_json.get("action") == "stop":
-            self.cancelled = True
-            print("Cancelled")
+        if "reset" in text_data_json:
+            self.messages = []
             return
 
         message_text = text_data_json["message"]
@@ -39,7 +38,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             },
         )
         await self.send(text_data=system_message_html)
-
         await self.generate_ai_response()
 
     async def generate_ai_response(self):
@@ -58,29 +56,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
             chunks.append(chunk)
 
-        if not self.cancelled:
-            final_message = (
-                stream_chunk_builder(chunks, messages=self.messages)
-                .choices[0]
-                .message.content
-            )
-            final_message_rendered = render_to_string(
-                "partials/final_message.html",
-                {
-                    "message_text": final_message,
-                    "message_id": self.message_id,
-                },
-            )
+        final_message = (
+            stream_chunk_builder(chunks, messages=self.messages)
+            .choices[0]
+            .message.content
+        )
+        final_message_rendered = render_to_string(
+            "partials/final_message.html",
+            {
+                "message_text": final_message,
+                "message_id": self.message_id,
+            },
+        )
 
-            await self.send(text_data=final_message_rendered)
-
-            self.messages.append(
-                {
-                    "content": final_message,
-                    "role": "system",
-                }
-            )
-
-    async def disconnect(self, close_code):
-        # Handle disconnection
-        self.cancelled = True
+        await self.send(text_data=final_message_rendered)
+        self.messages.append(
+            {
+                "content": final_message,
+                "role": "system",
+            }
+        )

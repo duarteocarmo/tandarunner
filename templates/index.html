@@ -56,7 +56,7 @@
                         </div>
                         <form id="form"
                               ws-send
-                              hx-trigger="keyup[key=='Enter'&&!shiftKey], click from:#sendMessage">
+                              hx-trigger="keyup[key=='Enter'&&!shiftKey], click from:#sendMessage, click from:#resetChat">
                             <div>
                                 <textarea name="message"
                                           placeholder="Say something..."
@@ -68,7 +68,7 @@
                             <div class="right">
                                 <button type="submit" id="sendMessage">Send</button>
                                 <button type="button" id="stopMessage">Stop</button>
-                                <button type="button" onclick="${reset}">Reset</button>
+                                <button type="button" name="reset" id="resetChat">Reset</button>
                             </div>
                         </form>
                     </div>
