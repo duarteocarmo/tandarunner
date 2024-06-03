@@ -1,9 +1,14 @@
 import json
+import logging
 import uuid
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.template.loader import render_to_string
-from litellm import acompletion, stream_chunk_builder
+from litellm import stream_chunk_builder
+
+from tandarunner.chat import generate_response_to
+
+logger = logging.getLogger(__name__)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -13,10 +18,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        print(f"Received: {text_data_json}")
+        logger.info(f"Received: {text_data_json}")
 
         if "reset" in text_data_json:
-            self.messages = []
+            await self.reset_chat()
             return
 
         message_text = text_data_json["message"]
@@ -40,13 +45,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=system_message_html)
         await self.generate_ai_response()
 
-    async def generate_ai_response(self):
-        response = await acompletion(
-            model="gpt-3.5-turbo",
-            messages=self.messages,
-            stream=True,
-        )
+    async def reset_chat(self):
+        self.messages = []
+        content = """<div class="chat-messages" id="message-list" hx-swap-oob="outerHTML"></div>"""
+        await self.send(text_data=content)
 
+    async def generate_ai_response(self):
+        response = await generate_response_to(self.messages)
         chunks = []
         async for chunk in response:
             text = chunk.choices[0].delta.content or ""
