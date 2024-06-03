@@ -29,7 +29,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         user_message_html = render_to_string(
             "partials/message.html",
-            {"message_text": message_text, "is_system": False},
+            {
+                "message_text": message_text,
+                "is_system": False,
+            },
         )
         await self.send(text_data=user_message_html)
 

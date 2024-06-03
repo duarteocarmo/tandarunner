@@ -7,6 +7,9 @@
         {% else %}
             <img src="{% static 'icons/run.png' %}" class="logo">
         {% endif %}
-        <div {% if message_id %}id="{{ message_id }}"{% endif %}>{{ message_text|markdown|safe }}</div>
+        <div {% if message_id %}id="{{ message_id }}"{% endif %}>
+            {{ message_text|markdown|safe }}
+            {% if is_system %}<div class="loader"></div>{% endif %}
+        </div>
     </div>
 </div>
