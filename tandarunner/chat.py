@@ -1,5 +1,4 @@
-import litellm
-from litellm import acompletion
+from litellm import acompletion, litellm
 
 litellm.set_verbose = False
 

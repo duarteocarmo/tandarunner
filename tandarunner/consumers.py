@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.messages = []
+        self.user = self.scope["user"]
         await super().connect()
 
     async def receive(self, text_data):
@@ -45,13 +46,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "message_id": self.message_id,
             },
         )
+
         await self.send(text_data=system_message_html)
-        await self.generate_ai_response()
+        if self.user.is_anonymous:
+            await self.not_authorized_response()
+        else:
+            await self.generate_ai_response()
 
     async def reset_chat(self):
         self.messages = []
         content = """<div class="chat-messages" id="message-list" hx-swap-oob="outerHTML"></div>"""
         await self.send(text_data=content)
+
+    async def not_authorized_response(self):
+        message = render_to_string(
+            "partials/final_message.html",
+            {
+                "message_text": "Please login to use the chat feature :) ",
+                "message_id": self.message_id,
+            },
+        )
+        await self.send(text_data=message)
 
     async def generate_ai_response(self):
         response = await generate_response_to(self.messages)

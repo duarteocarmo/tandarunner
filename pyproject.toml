@@ -14,7 +14,8 @@ dependencies = [
   "whitenoise",
   "channels[daphne]",
   "django-debug-toolbar",
-  "litellm",
+  "litellm==1.38.12",
+  "pydantic==1.10.16",
   "markdown",
 ]
 
