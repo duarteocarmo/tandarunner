@@ -20,6 +20,7 @@ clean:
 	@rm -rf **/__pycache__
 	@rm -rf build
 	@rm -rf dist
+	@rm -rf /var/tmp/django_cache
 
 ## Run checks (ruff + test)
 check:

@@ -1,9 +1,13 @@
+import logging
 from datetime import timedelta
 
 import requests
+from allauth.socialaccount.models import SocialToken
 from django.conf import settings
 from django.utils import timezone
 from stravalib import Client
+
+logger = logging.getLogger(__name__)
 
 
 def refresh_token(access_token):
@@ -34,8 +38,20 @@ def refresh_token(access_token):
     )
     access_token.token_secret = response["refresh_token"]
     access_token.save()
+    logger.info("Refreshed token!")
 
 
 def get_athlete(access_token):
     client = Client(access_token=access_token.token)
     return client.get_athlete()
+
+
+def get_access_token(user):
+    account_provider = "strava"
+    access_token = SocialToken.objects.filter(
+        account__user=user, account__provider=account_provider
+    ).last()
+    if access_token.expires_at <= timezone.now():
+        refresh_token(access_token)
+
+    return access_token

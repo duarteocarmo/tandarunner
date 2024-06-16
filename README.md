@@ -35,3 +35,9 @@ Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-sta
 - [x] Chat send on enter
 - [x] Loading on send
 - [x] Clear conversation
+- [x] Cannot chat if not logged in 
+- [x] If not logged in, see the charts from Duarte 
+- [x] Cache fetching using diskcache for long computations
+- [ ] Deployment
+- [ ] Small description of the app
+- [ ] Logout button

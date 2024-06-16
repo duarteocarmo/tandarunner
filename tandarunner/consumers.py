@@ -67,6 +67,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             },
         )
         await self.send(text_data=message)
+        await self.close()
 
     async def generate_ai_response(self):
         response = await generate_response_to(self.messages)

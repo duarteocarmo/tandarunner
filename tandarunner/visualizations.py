@@ -1,9 +1,16 @@
+import logging
+import os
+import pickle
 from datetime import datetime, timedelta
 
 import altair as alt
 import numpy
 import pandas
+from django.conf import settings
+from django.core.cache import cache
 from stravalib import Client
+
+logger = logging.getLogger(__name__)
 
 DAYS_BACK = 180
 
@@ -192,7 +199,7 @@ def viz_weekly_chart(
         (line_chart + text_labels)
         .properties(
             width="container",
-            height=150,
+            height=200,
             title="Running distance per week (km)",
         )
         .interactive()
@@ -421,10 +428,29 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
 
 
 def get_visualizations(access_token: str) -> dict:
-    weekly_data, daily_df, upper_limit = prepare_data(access_token)
+    cache_id = f"viz-{access_token}"
+    if cache_id in cache:
+        logger.info("Found in cache")
+        return cache.get(cache_id)
 
-    return {
+    weekly_data, daily_df, upper_limit = prepare_data(access_token)
+    logger.info("Prepared data.")
+
+    results = {
         "weekly_chart": viz_weekly_chart(weekly_data, upper_limit),
         "rolling_tanda": viz_rolling_tanda(daily_df=daily_df),
         "marathon_predictor": marathon_predictor(daily_df=daily_df),
     }
+
+    logger.info("Ran computation for graphs.")
+    cache.set(cache_id, results)
+
+    return results
+
+
+def get_dummy_visualizations() -> dict:
+    file_path = os.path.join(
+        f"{settings.STATICFILES_DIRS[0]}/dummy/", "temp_viz.pkl"
+    )
+    with open(file_path, "rb") as f:
+        return pickle.load(f)
