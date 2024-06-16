@@ -49,6 +49,7 @@ build:
 
 ## Build the docker image
 docker:
+	make clean
 	docker build -f Dockerfile -t tandarunner .
 
 #################################################################################

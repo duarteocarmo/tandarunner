@@ -1,16 +1,15 @@
-FROM python:3.11-slim-buster
+FROM --platform=$BUILDPLATFORM python:3.11-alpine AS builder
 
-COPY requirements.txt pyproject.toml ./
-COPY Makefile README.md  ./
-COPY src/ src/
+EXPOSE 8000
 
-RUN python -m pip install --upgrade pip && \ 
-	python -m pip install -r requirements.txt --no-cache-dir && \
-	python -m pip install . --no-cache-dir 
+WORKDIR /app 
 
+COPY requirements.txt /app
 
-WORKDIR /
+RUN pip3 install -r requirements.txt --no-cache-dir
 
-EXPOSE 80
+COPY . /app 
 
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "80"]
+ENTRYPOINT ["python3"] 
+
+CMD ["manage.py", "runserver", "0.0.0.0:8000"]
