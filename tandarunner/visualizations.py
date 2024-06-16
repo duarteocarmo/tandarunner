@@ -135,7 +135,10 @@ def prepare_data(access_token: str) -> dict:
         daily_df["distance_meters"] / 1000
     )
     daily_df["distance_km"] = daily_df["distance_meters"] / 1000
-    daily_df["date_factor"] = daily_df.index.factorize()[0]
+
+    daily_df = daily_df.sort_values(by="date", ascending=True)
+    daily_df["date_factor"] = numpy.exp(numpy.linspace(0, 15, len(daily_df)))
+
     daily_df["daily_pace_pretty"] = daily_df["pace_sec_per_km"].apply(
         lambda x: f"{int(x//60)}:{int(x%60):02d}"
     )
@@ -302,14 +305,10 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
                 alt.Tooltip("date:T", title="Date"),
                 alt.Tooltip("daily_pace_pretty:N", title="Pace (mm:ss/km)"),
             ],
-            color=alt.condition(
-                alt.datum.date_factor == daily_df["date_factor"].max(),
-                alt.value("black"),
-                alt.Color(
-                    "date_factor",
-                    scale=alt.Scale(scheme="lightorange"),
-                    legend=None,
-                ),
+            color=alt.Color(
+                "date_factor:Q",
+                scale=alt.Scale(scheme="lightgreyred"),
+                legend=None,
             ),
         )
     )
@@ -416,7 +415,7 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
     )
 
     return (
-        (daily_line + marathon_times + tanda_progression)
+        (marathon_times + daily_line + tanda_progression)
         .properties(
             width="container",
             height=300,

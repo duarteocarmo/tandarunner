@@ -51,6 +51,8 @@ build:
 docker:
 	make clean
 	docker build -f Dockerfile -t tandarunner .
+	docker run -p 8000:8000 tandarunner:latest
+
 
 #################################################################################
 # Self Documenting Commands                                                     #
