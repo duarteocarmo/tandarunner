@@ -40,7 +40,7 @@ Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-sta
 - [x] Cache fetching using diskcache for long computations
 - [x] Small description of the app
 - [x] Logout button
-- [ ] Deployment
+- [x] Deployment
 - [ ] Adjust weekly running graph for no cut out
 - [ ] Adjust progression graph, so you can actually see progression...
 - [ ] Make sure no cutoffs when openning on laptop
