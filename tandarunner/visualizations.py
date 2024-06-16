@@ -199,7 +199,7 @@ def viz_weekly_chart(
         (line_chart + text_labels)
         .properties(
             width="container",
-            height=200,
+            height=150,
             title="Running distance per week (km)",
         )
         .interactive()
@@ -256,7 +256,7 @@ def viz_rolling_tanda(daily_df: pandas.DataFrame) -> dict:
         (daily_line + rolling_line)
         .properties(
             width="container",
-            height=300,
+            height=250,
             title="Tanda day vs. 8-week rolling Tanda day",
         )
         .interactive()

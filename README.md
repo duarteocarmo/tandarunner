@@ -38,6 +38,10 @@ Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-sta
 - [x] Cannot chat if not logged in 
 - [x] If not logged in, see the charts from Duarte 
 - [x] Cache fetching using diskcache for long computations
+- [x] Small description of the app
+- [x] Logout button
 - [ ] Deployment
-- [ ] Small description of the app
-- [ ] Logout button
+- [ ] Adjust weekly running graph for no cut out
+- [ ] Adjust progression graph, so you can actually see progression...
+- [ ] Make sure no cutoffs when openning on laptop
+
