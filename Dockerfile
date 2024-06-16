@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM python:3.11-alpine AS builder
+FROM python:3.11-slim-bookworm AS base
 
 EXPOSE 8000
 
@@ -6,7 +6,8 @@ WORKDIR /app
 
 COPY requirements.txt /app
 
-RUN pip3 install --upgrade pip && pip3 install -r requirements.txt --no-cache-dir
+RUN pip3 install --upgrade pip  
+RUN pip3 install -r requirements.txt --no-cache-dir
 
 COPY . /app 
 

@@ -5,18 +5,11 @@ aiohttp==3.9.5
 aiosignal==1.3.1
     # via aiohttp
 altair==5.3.0
-    # via
-    #   tandarunner (pyproject.toml)
-    #   altair-tiles
-    #   vegafusion
-altair-tiles==0.3.0
-    # via altair
+    # via tandarunner (pyproject.toml)
 anyio==4.4.0
     # via
     #   httpx
     #   openai
-anywidget==0.9.12
-    # via altair
 appdirs==1.4.4
     # via pint
 arrow==1.3.0
@@ -26,8 +19,6 @@ asgiref==3.8.1
     #   channels
     #   daphne
     #   django
-asttokens==2.4.1
-    # via stack-data
 attrs==23.2.0
     # via
     #   aiohttp
@@ -52,11 +43,7 @@ channels==4.1.0
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
-    # via
-    #   litellm
-    #   mercantile
-comm==0.2.2
-    # via ipywidgets
+    # via litellm
 constantly==23.10.4
     # via twisted
 cryptography==42.0.8
@@ -67,8 +54,6 @@ cryptography==42.0.8
     #   service-identity
 daphne==4.1.2
     # via channels
-decorator==5.1.1
-    # via ipython
 distro==1.9.0
     # via openai
 django==5.0.6
@@ -81,8 +66,6 @@ django-allauth==0.63.3
     # via tandarunner (pyproject.toml)
 django-debug-toolbar==4.4.2
     # via tandarunner (pyproject.toml)
-executing==2.0.1
-    # via stack-data
 filelock==3.15.1
     # via huggingface-hub
 flexcache==0.3
@@ -119,12 +102,6 @@ importlib-metadata==7.1.0
     # via litellm
 incremental==22.10.0
     # via twisted
-ipython==8.25.0
-    # via ipywidgets
-ipywidgets==8.1.3
-    # via anywidget
-jedi==0.19.1
-    # via ipython
 jinja2==3.1.4
     # via
     #   altair
@@ -133,18 +110,12 @@ jsonschema==4.22.0
     # via altair
 jsonschema-specifications==2023.12.1
     # via jsonschema
-jupyterlab-widgets==3.0.11
-    # via ipywidgets
 litellm==1.38.12
     # via tandarunner (pyproject.toml)
 markdown==3.6
     # via tandarunner (pyproject.toml)
 markupsafe==2.1.5
     # via jinja2
-matplotlib-inline==0.1.7
-    # via ipython
-mercantile==1.2.1
-    # via altair-tiles
 multidict==6.0.5
     # via
     #   aiohttp
@@ -154,7 +125,6 @@ numpy==2.0.0
     #   tandarunner (pyproject.toml)
     #   altair
     #   pandas
-    #   pyarrow
 oauthlib==3.2.2
     # via requests-oauthlib
 openai==1.34.0
@@ -167,30 +137,8 @@ pandas==2.2.2
     # via
     #   tandarunner (pyproject.toml)
     #   altair
-    #   vega-datasets
-    #   vegafusion
-parso==0.8.4
-    # via jedi
-pexpect==4.9.0
-    # via ipython
 pint==0.24
     # via stravalib
-prompt-toolkit==3.0.47
-    # via ipython
-protobuf==5.27.1
-    # via vegafusion
-psutil==5.9.8
-    # via vegafusion
-psygnal==0.11.1
-    # via anywidget
-ptyprocess==0.7.0
-    # via pexpect
-pure-eval==0.2.2
-    # via stack-data
-pyarrow==16.1.0
-    # via
-    #   altair
-    #   vegafusion
 pyasn1==0.6.0
     # via
     #   pyasn1-modules
@@ -204,8 +152,6 @@ pydantic==1.10.16
     #   tandarunner (pyproject.toml)
     #   openai
     #   stravalib
-pygments==2.18.0
-    # via ipython
 pyjwt==2.8.0
     # via django-allauth
 pyopenssl==24.1.0
@@ -250,7 +196,6 @@ setuptools==70.0.0
     #   zope-interface
 six==1.16.0
     # via
-    #   asttokens
     #   automat
     #   python-dateutil
 sniffio==1.3.1
@@ -262,8 +207,6 @@ sqlparse==0.5.0
     # via
     #   django
     #   django-debug-toolbar
-stack-data==0.6.3
-    # via ipython
 stravalib==1.7
     # via tandarunner (pyproject.toml)
 tiktoken==0.7.0
@@ -276,12 +219,6 @@ tqdm==4.66.4
     # via
     #   huggingface-hub
     #   openai
-traitlets==5.14.3
-    # via
-    #   comm
-    #   ipython
-    #   ipywidgets
-    #   matplotlib-inline
 twisted==24.3.0
     # via daphne
 txaio==23.1.1
@@ -290,11 +227,9 @@ types-python-dateutil==2.9.0.20240316
     # via arrow
 typing-extensions==4.12.2
     # via
-    #   anywidget
     #   flexcache
     #   flexparser
     #   huggingface-hub
-    #   ipython
     #   openai
     #   pint
     #   pydantic
@@ -303,24 +238,8 @@ tzdata==2024.1
     # via pandas
 urllib3==2.2.1
     # via requests
-vega-datasets==0.9.0
-    # via altair
-vegafusion==1.6.9
-    # via altair
-vegafusion-python-embed==1.6.9
-    # via vegafusion
-vl-convert-python==1.4.0
-    # via
-    #   altair
-    #   vegafusion
-wcwidth==0.2.13
-    # via prompt-toolkit
 whitenoise==6.6.0
     # via tandarunner (pyproject.toml)
-widgetsnbextension==4.0.11
-    # via ipywidgets
-xyzservices==2024.6.0
-    # via altair-tiles
 yarl==1.9.4
     # via aiohttp
 zipp==3.19.2
