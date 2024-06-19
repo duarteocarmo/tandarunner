@@ -19,10 +19,10 @@ Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-sta
 (.env) $ make test
 ```
 
-4. Run the API
+4. Run the Web App
 
 ```shell
-(.env) $ make api
+(.env) $ make app
 ```
 
 5. For more help:
