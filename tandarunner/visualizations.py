@@ -284,7 +284,7 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
         )
         .mark_point(
             filled=True,
-            size=90,
+            size=80,
         )
         .encode(
             x=alt.X(
@@ -444,6 +444,7 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
         .interactive()
     )
 
+    daily_df["Legend"] = "Current form"
     current_form = (
         alt.Chart(
             daily_df.loc[start_date:last_date]
@@ -451,7 +452,7 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
             .sort_values("date")
             .tail(1)
         )
-        .mark_point(filled=True, size=70)
+        .mark_point(filled=True, size=70, color="#FFAA00")
         .encode(
             x=alt.X(
                 "rolling_km_per_week_daily_distance:Q",
@@ -471,7 +472,12 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
                     labelExpr="datum.value > 0 ? timeFormat(datum.value * 1000, '%M:%S') : ''",
                 ),
             ),
-            color=alt.value("#142ef5"),
+            # color=alt.value("#142ef5"),
+            color=alt.Color(
+                "Legend:N",
+                legend=alt.Legend(title=None),
+                scale=alt.Scale(domain=["Current form"], range=["#142ef5"]),
+            ),
             tooltip=tooltip,
         )
         .properties(width=800, height=500, title="Pace and daily distance")

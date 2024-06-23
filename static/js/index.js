@@ -55,7 +55,6 @@ document.addEventListener("htmx:oobBeforeSwap", function (event) {
   const messageInput = document.getElementById("messageinput");
   const sendMessage = document.getElementById("sendMessage");
 
-  messageInput.classList.add("loading");
   sendMessage.disabled = true;
   messageInput.disabled = true;
 
@@ -65,7 +64,6 @@ document.addEventListener("htmx:oobBeforeSwap", function (event) {
 
   if (event.detail.fragment.attributes === undefined) {
     state.allowSwaps = true;
-    messageInput.classList.remove("loading");
     sendMessage.disabled = false;
     messageInput.disabled = false;
     messageInput.focus();
