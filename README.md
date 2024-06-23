@@ -46,5 +46,6 @@ Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-sta
 - [x] Make sure no cutoffs when openning on laptop
 - [x] Adjust progression graph, so you can actually see progression...
 - [ ] Yearly distance graph
+- [ ] Build dataframe for insights generation (e.g., list of activities)
 - [ ] Generate 3/4 insights based on desired marathon goal
 - [ ] Basic tools AI in a loop? TBD
