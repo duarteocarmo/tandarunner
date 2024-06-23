@@ -43,7 +43,8 @@ Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-sta
 - [x] Deployment
 - [x] Adjust weekly running graph for no cut out
 - [x] Cleaner rolling tanda chart
-- [ ] Make sure no cutoffs when openning on laptop
+- [x] Make sure no cutoffs when openning on laptop
 - [x] Adjust progression graph, so you can actually see progression...
-- [ ] Yearly distance
-
+- [ ] Yearly distance graph
+- [ ] Generate 3/4 insights based on desired marathon goal
+- [ ] Basic tools AI in a loop? TBD
