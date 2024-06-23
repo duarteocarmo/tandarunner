@@ -38,7 +38,7 @@ test:
 
 ## Run api
 app:
-	@python manage.py runserver
+	@python manage.py runserver 
 
 ## Build using pip-tools
 build:

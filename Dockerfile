@@ -1,5 +1,7 @@
 FROM python:3.11-slim-bookworm AS base
 
+ENV DEBUG=FALSE
+
 EXPOSE 8000
 
 WORKDIR /app 
@@ -16,7 +18,7 @@ RUN python manage.py migrate --noinput
 RUN python manage.py collectstatic --noinput
 # RUN python manage.py createsuperuser --noinput
 
-
 ENTRYPOINT ["python3"] 
 
 CMD ["manage.py", "runserver", "0.0.0.0:8000"]
+

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,28 +25,36 @@ SECRET_KEY = (
     "django-insecure-dbh%&%+_7la4h1$t9ieyy2^7@304&9=p4rq4l%x9uiudj#en3i"
 )
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "FALSE") == "TRUE"
 
 ALLOWED_HOSTS = ["*"]
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-CSRF_TRUSTED_ORIGINS = ["https://tandarunner.duarteocarmo.com"]
 
-# LOGGING
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
         },
     },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+        },
     },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+    "root": {"handlers": ["console"], "level": "INFO"},
 }
 
 
@@ -149,16 +158,12 @@ SOCIALACCOUNT_PROVIDERS = {
     "strava": {
         "APP": {
             "client_id": "125463",
-            "secret": "714fac0667a26729064973b0d01b9e317020a956",
+            "secret": "017fafbf5c5067490f1382fd3454c30cdb61f4b0",
         }
     }
 }
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_STORE_TOKENS = True
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
 
@@ -168,9 +173,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
 
@@ -183,3 +185,8 @@ CACHES = {
         "TIMEOUT": 300,
     }
 }
+
+if not DEBUG:
+    print("Running with prod settings!!!")
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+    CSRF_TRUSTED_ORIGINS = ["https://tandarunner.duarteocarmo.com"]

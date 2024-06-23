@@ -22,9 +22,11 @@ def index(request: HttpRequest) -> HttpResponse:
         logger.info("Fetched dummy data for anonymous user.")
     else:
         access_token = get_access_token(user)
+        logger.info("Got access token.")
         data = {
             "athlete": get_athlete(access_token),
             "visualizations": get_visualizations(access_token.token),
         }
+        logger.info("Fetched viz data for authenticated user.")
 
     return TemplateResponse(request, "index.html", data)

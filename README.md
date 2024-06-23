@@ -41,7 +41,9 @@ Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-sta
 - [x] Small description of the app
 - [x] Logout button
 - [x] Deployment
-- [ ] Adjust weekly running graph for no cut out
-- [ ] Adjust progression graph, so you can actually see progression...
+- [x] Adjust weekly running graph for no cut out
+- [x] Cleaner rolling tanda chart
 - [ ] Make sure no cutoffs when openning on laptop
+- [x] Adjust progression graph, so you can actually see progression...
+- [ ] Yearly distance
 

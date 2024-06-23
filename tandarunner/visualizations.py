@@ -58,7 +58,7 @@ def pace_tick_formatter(value):
     return f"{minutes}:{seconds:02d}"
 
 
-def prepare_data(access_token: str) -> dict:
+def prepare_data(access_token: str) -> tuple:
     client = Client(access_token)
     five_months_ago = datetime.now() - timedelta(days=DAYS_BACK)
     activities = client.get_activities(after=five_months_ago.isoformat())
@@ -78,10 +78,6 @@ def prepare_data(access_token: str) -> dict:
     weekly_data = df.resample("W").sum()
     weekly_data["distance_km"] = round(
         weekly_data["distance_meters"] / 1000, 1
-    )
-    upper_limit = (
-        weekly_data["distance_km"].mean()
-        + 2 * weekly_data["distance_km"].std()
     )
 
     daily_df = df.groupby(df.index.date).sum()
@@ -149,14 +145,20 @@ def prepare_data(access_token: str) -> dict:
     daily_df["rolling_km_per_week_daily_distance"] = (
         daily_df["rolling_km_per_week"] / 7
     )
+
+    daily_df["pretty_rolling_tanda_day"] = daily_df["rolling_tanda_day"].apply(
+        pretty_marathon_time
+    )
     daily_df["Latest run"] = "Latest run"
 
-    return weekly_data, daily_df, upper_limit
+    return weekly_data, daily_df
 
 
 def viz_weekly_chart(
-    weekly_data: pandas.DataFrame, upper_limit: float
+    weekly_data: pandas.DataFrame,
 ) -> dict:
+    upper_limit = weekly_data["distance_km"].max()
+
     x = alt.X("start_date:T", scale=alt.Scale(padding=20), title="Week")
     y = alt.Y(
         "distance_km:Q",
@@ -185,47 +187,50 @@ def viz_weekly_chart(
             y=y,
             tooltip=["start_date:T", "distance_km:Q"],
         )
+        .properties(
+            width=800, height=500, title="Running distance per week (km)"
+        )
     )
 
-    # Text labels for each point
-    text_labels = (
+    points = (
         alt.Chart(weekly_data.reset_index())
-        .mark_text(dy=-10, color="black", align="center")
+        .mark_point(
+            filled=True,
+            fill="white",
+            stroke="#ff561b",
+            strokeWidth=2,
+            size=50,
+            shape="circle",
+        )
         .encode(
             x=x,
             y=y,
-            text=alt.Text("distance_km:Q", format="d"),
+            tooltip=["start_date:T", "distance_km:Q"],
         )
     )
 
     return (
-        (line_chart + text_labels)
+        (line_chart + points)
         .properties(
             width="container",
             height=150,
             title="Running distance per week (km)",
         )
-        .interactive()
         .to_json()
     )
 
 
 def viz_rolling_tanda(daily_df: pandas.DataFrame) -> dict:
     x = alt.X("date:T", title="Date", scale=alt.Scale(padding=20))
-    legend = None
+    color = "#d65de0"
 
     daily_line = (
         alt.Chart(daily_df.reset_index())
-        .mark_point(
-            shape="triangle",
-        )
+        .mark_point(shape="square", filled=True, opacity=0.3)
         .encode(
             x=x,
             y=alt.Y("hoursminutes(tanda_day_pretty):O", title="Tanda day"),
-            color=alt.Color(
-                "type_daily:N",
-                legend=legend,
-            ),
+            color=alt.value(color),
             tooltip=[
                 alt.Tooltip("tanda_day_pretty", timeUnit="hoursminutes"),
                 alt.Tooltip("date", timeUnit="yearmonthdate"),
@@ -234,18 +239,14 @@ def viz_rolling_tanda(daily_df: pandas.DataFrame) -> dict:
     )
     rolling_line = (
         alt.Chart(daily_df.reset_index())
-        .mark_line(interpolate="basis", color="#b95cf4")
+        .mark_line(interpolate="basis")
         .encode(
             x=x,
             y=alt.Y(
                 "hoursminutes(rolling_tanda_day_pretty):O",
                 title="Tanda trend (8 weeks)",
             ),
-            color=alt.Color(
-                "type_rolling:N",
-                legend=legend,
-                scale=alt.Scale(range=["#b95cf4"]),
-            ),
+            color=alt.value(color),
             tooltip=[
                 alt.Tooltip(
                     "rolling_tanda_day_pretty", timeUnit="hoursminutes"
@@ -262,7 +263,6 @@ def viz_rolling_tanda(daily_df: pandas.DataFrame) -> dict:
             height=250,
             title="Tanda day vs. 8-week rolling Tanda day",
         )
-        .interactive()
         .configure_legend(orient="top")
     ).to_json()
 
@@ -270,20 +270,27 @@ def viz_rolling_tanda(daily_df: pandas.DataFrame) -> dict:
 def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
     pace_ticks_values = list(range(240, 60 * 8, 15))
 
+    last_date = max(daily_df.index)
+    start_date = last_date - timedelta(days=56)
+    daily_df["shape"] = daily_df.index.to_series().apply(
+        lambda x: "square" if x == last_date else "circle"
+    )
+
     daily_line = (
-        alt.Chart(daily_df.reset_index().sort_values("date"))
+        alt.Chart(
+            daily_df.loc[start_date:last_date]
+            .reset_index()
+            .sort_values("date")
+        )
         .mark_point(
             filled=True,
-            shape="triangle",
-            size=60,
+            size=90,
         )
         .encode(
             x=alt.X(
                 "distance_km:Q",
                 title="Daily Distance (km)",
-                axis=alt.Axis(
-                    tickCount=int(daily_df["distance_km"].max() // 5)
-                ),
+                axis=alt.Axis(tickCount=int(25 // 5)),
             ),
             y=alt.Y(
                 "pace_sec_per_km:Q",
@@ -308,6 +315,11 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
             color=alt.Color(
                 "date_factor:Q",
                 scale=alt.Scale(scheme="lightgreyred"),
+                legend=None,
+            ),
+            shape=alt.Shape(
+                "shape:N",
+                scale=alt.Scale(range=["square", "circle"]),
                 legend=None,
             ),
         )
@@ -336,7 +348,16 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
         alt.Chart(times_df)
         .mark_line(interpolate="basis")
         .encode(
-            x=alt.X("km_day:Q", title="Daily Distance (km)"),
+            x=alt.X(
+                "km_day:Q",
+                title="Daily Distance (km)",
+                scale=alt.Scale(
+                    domain=[
+                        0,
+                        daily_df.loc[start_date:last_date].distance_km.max(),
+                    ]
+                ),
+            ),
             y=alt.Y(
                 "pace:Q",
                 title="Pace (mm:ss)",
@@ -368,9 +389,28 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
     )
 
     daily_df["Legend"] = "Tanda Progression line"
+
+    tooltip = [
+        alt.Tooltip(
+            "rolling_km_per_week_daily_distance:Q",
+            title="Distance (km)",
+            format=".1f",
+        ),
+        alt.Tooltip(
+            "rolling_pace_pretty:N",
+            title="Pace (s/km)",
+        ),
+        alt.Tooltip("date:T", title="Date"),
+        alt.Tooltip("pretty_rolling_tanda_day:N", title="Marathon Form"),
+    ]
+
     tanda_progression = (
-        alt.Chart(daily_df.reset_index().sort_values("date")[-56:])
-        .mark_trail(strokeCap="square")
+        alt.Chart(
+            daily_df.loc[start_date:last_date]
+            .reset_index()
+            .sort_values("date")
+        )
+        .mark_line(point=True, strokeWidth=2)
         .encode(
             x=alt.X(
                 "rolling_km_per_week_daily_distance:Q",
@@ -390,32 +430,56 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
                     labelExpr="datum.value > 0 ? timeFormat(datum.value * 1000, '%M:%S') : ''",
                 ),
             ),
-            tooltip=[
-                alt.Tooltip(
-                    "rolling_km_per_week_daily_distance:Q",
-                    title="Distance (km)",
-                    format=".1f",
-                ),
-                alt.Tooltip(
-                    "rolling_pace_pretty:N",
-                    title="Pace (s/km)",
-                ),
-                alt.Tooltip("date:T", title="Date"),
-            ],
+            tooltip=tooltip,
             order="date",
-            size=alt.Size("date:T", legend=None),
             color=alt.Color(
                 "Legend:N",
                 legend=alt.Legend(title=None),
                 scale=alt.Scale(
-                    domain=["Tanda Progression line"], range=["#e739bd"]
+                    domain=["Tanda Progression line"], range=["#87f94c"]
                 ),
             ),
         )
+        .properties(width=800, height=500, title="Pace and daily distance")
+        .interactive()
+    )
+
+    current_form = (
+        alt.Chart(
+            daily_df.loc[start_date:last_date]
+            .reset_index()
+            .sort_values("date")
+            .tail(1)
+        )
+        .mark_point(filled=True, size=70)
+        .encode(
+            x=alt.X(
+                "rolling_km_per_week_daily_distance:Q",
+                title="Daily Distance (km)",
+                scale=alt.Scale(zero=False),
+            ),
+            y=alt.Y(
+                "rolling_pace_sec_per_km:Q",
+                title="Pace (mm:ss)",
+                scale=alt.Scale(
+                    reverse=True,
+                    zero=False,
+                    domain=(min(pace_ticks_values), max(pace_ticks_values)),
+                ),
+                axis=alt.Axis(
+                    values=pace_ticks_values,
+                    labelExpr="datum.value > 0 ? timeFormat(datum.value * 1000, '%M:%S') : ''",
+                ),
+            ),
+            color=alt.value("#142ef5"),
+            tooltip=tooltip,
+        )
+        .properties(width=800, height=500, title="Pace and daily distance")
+        .interactive()
     )
 
     return (
-        (marathon_times + daily_line + tanda_progression)
+        (marathon_times + daily_line + tanda_progression + current_form)
         .properties(
             width="container",
             height=300,
@@ -429,20 +493,20 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
 def get_visualizations(access_token: str) -> dict:
     cache_id = f"viz-{access_token}"
     if cache_id in cache:
-        logger.info("Found in cache")
+        logger.info("Found viz data in cache.")
         return cache.get(cache_id)
 
-    weekly_data, daily_df, upper_limit = prepare_data(access_token)
+    weekly_data, daily_df = prepare_data(access_token)
     logger.info("Prepared data.")
 
     results = {
-        "weekly_chart": viz_weekly_chart(weekly_data, upper_limit),
+        "weekly_chart": viz_weekly_chart(weekly_data),
         "rolling_tanda": viz_rolling_tanda(daily_df=daily_df),
         "marathon_predictor": marathon_predictor(daily_df=daily_df),
     }
 
-    logger.info("Ran computation for graphs.")
     cache.set(cache_id, results)
+    logger.info("Ran computation for graphs and set cache.")
 
     return results
 
