@@ -34,7 +34,10 @@
     target="_blank">Geovanni Tanda's</a> formula, and Christof's amazing <a href="https://crplot.com/" target="_blank">CR plots</a>.
                     </p>
                     {% if user.is_authenticated %}
-                        <p>Welcome, {{ user.username }}!</p>
+                        <p>Welcome, {{ user.username|title }}!</p>
+                        <code>
+                            You have run {{ stats.pretty_total_kms|floatformat:"0" }} km this year. (That's {{ stats.pretty_total_time }} of running!)
+                        </code>
                     {% else %}
                         <p>
                             This is <a href="https://duarteocarmo.com" target="_blank">Duarte's</a> dummy data. Hopefully you're running more than him.

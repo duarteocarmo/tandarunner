@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import altair as alt
 import numpy
 import pandas
+import stravalib
 from django.conf import settings
 from django.core.cache import cache
 from stravalib import Client
@@ -13,6 +14,20 @@ from stravalib import Client
 logger = logging.getLogger(__name__)
 
 DAYS_BACK = 180
+
+
+def get_stats(access_token: str) -> dict:
+    client = Client(access_token)
+    stats = client.get_athlete_stats().to_dict()
+    logger.info("Got athlete stats.")
+    ytd_total_meters = stats["ytd_run_totals"]["distance"]
+    stats["pretty_total_kms"] = ytd_total_meters / 1000
+
+    rest = stats["ytd_run_totals"]["moving_time"].seconds / 3600 / 24
+    ytd_total_days = stats["ytd_run_totals"]["moving_time"].days + rest
+    stats["pretty_total_time"] = f"{ytd_total_days:.2f} days"
+
+    return stats
 
 
 def get_tanda_value(km_per_week: int, pace_sec_per_km: int) -> float:
@@ -58,8 +73,7 @@ def pace_tick_formatter(value):
     return f"{minutes}:{seconds:02d}"
 
 
-def prepare_data(access_token: str) -> tuple:
-    client = Client(access_token)
+def prepare_data(client: stravalib.Client) -> tuple:
     five_months_ago = datetime.now() - timedelta(days=DAYS_BACK)
     activities = client.get_activities(after=five_months_ago.isoformat())
     running_activities = [act for act in activities if act.type == "Run"]
@@ -502,7 +516,8 @@ def get_visualizations(access_token: str) -> dict:
         logger.info("Found viz data in cache.")
         return cache.get(cache_id)
 
-    weekly_data, daily_df = prepare_data(access_token)
+    client = Client(access_token)
+    weekly_data, daily_df = prepare_data(client)
     logger.info("Prepared data.")
 
     results = {
@@ -510,6 +525,12 @@ def get_visualizations(access_token: str) -> dict:
         "rolling_tanda": viz_rolling_tanda(daily_df=daily_df),
         "marathon_predictor": marathon_predictor(daily_df=daily_df),
     }
+    # file_path = os.path.join(
+    #     f"{settings.STATICFILES_DIRS[0]}/dummy/", "temp_viz.pkl"
+    # )
+    #
+    # with open(file_path, "wb") as f:
+    #     pickle.dump(results, f)
 
     cache.set(cache_id, results)
     logger.info("Ran computation for graphs and set cache.")

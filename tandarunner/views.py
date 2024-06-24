@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 from tandarunner.helpers import get_access_token, get_athlete
 from tandarunner.visualizations import (
     get_dummy_visualizations,
+    get_stats,
     get_visualizations,
 )
 
@@ -26,6 +27,7 @@ def index(request: HttpRequest) -> HttpResponse:
         data = {
             "athlete": get_athlete(access_token),
             "visualizations": get_visualizations(access_token.token),
+            "stats": get_stats(access_token.token),
         }
         logger.info("Fetched viz data for authenticated user.")
 
