@@ -6,25 +6,38 @@ from datetime import datetime, timedelta
 import altair as alt
 import numpy
 import pandas
-import stravalib
+import requests
 from django.conf import settings
 from django.core.cache import cache
-from stravalib import Client
 
 logger = logging.getLogger(__name__)
 
 DAYS_BACK = 180
 
 
-def get_stats(access_token: str) -> dict:
-    client = Client(access_token)
-    stats = client.get_athlete_stats().to_dict()
+def get_athlete(access_token) -> dict:
+    url = f"{settings.STRAVA_BASE_URL}/athlete"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        raise Exception(
+            f"There was an error requesting: {response.status_code}"
+        )
+
+    return response.json()
+
+
+def get_stats(access_token: str, athlete_id: int) -> dict:
+    url = f"{settings.STRAVA_BASE_URL}/athletes/{athlete_id}/stats"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    stats = requests.get(url, headers=headers).json()
+
     logger.info("Got athlete stats.")
     ytd_total_meters = stats["ytd_run_totals"]["distance"]
     stats["pretty_total_kms"] = ytd_total_meters / 1000
 
-    rest = stats["ytd_run_totals"]["moving_time"].seconds / 3600 / 24
-    ytd_total_days = stats["ytd_run_totals"]["moving_time"].days + rest
+    ytd_total_days = stats["ytd_run_totals"]["moving_time"] / 3600 / 24
     stats["pretty_total_time"] = f"{ytd_total_days:.2f} days"
 
     return stats
@@ -73,17 +86,46 @@ def pace_tick_formatter(value):
     return f"{minutes}:{seconds:02d}"
 
 
-def prepare_data(client: stravalib.Client) -> tuple:
-    five_months_ago = datetime.now() - timedelta(days=DAYS_BACK)
-    activities = client.get_activities(after=five_months_ago.isoformat())
-    running_activities = [act for act in activities if act.type == "Run"]
+def fetch_activities(access_token: str) -> list:
+    url = f"{settings.STRAVA_BASE_URL}/athlete/activities"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    after_timestamp = int(
+        (datetime.now() - timedelta(days=DAYS_BACK)).timestamp()
+    )
+
+    per_page = 200
+    page = 1
+    all_activities = []
+
+    while True:
+        params = {"after": after_timestamp, "page": page, "per_page": per_page}
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()  # This will raise an HTTPError if the HTTP request returned an unsuccessful status code
+        activities = response.json()
+
+        if not activities:
+            break
+
+        all_activities.extend(activities)
+        if len(activities) < per_page:
+            break
+
+        page += 1
+
+    return all_activities
+
+
+def prepare_data(access_token: str) -> tuple:
+    activities = fetch_activities(access_token)
+
+    running_activities = [act for act in activities if act["type"] == "Run"]
 
     data = {
-        "start_date": [act.start_date for act in running_activities],
-        "distance_meters": [float(act.distance) for act in running_activities],
-        "time_seconds": [
-            act.moving_time.total_seconds() for act in running_activities
+        "start_date": [act["start_date"] for act in running_activities],
+        "distance_meters": [
+            float(act["distance"]) for act in running_activities
         ],
+        "time_seconds": [act["moving_time"] for act in running_activities],
     }
 
     df = pandas.DataFrame(data)
@@ -516,8 +558,7 @@ def get_visualizations(access_token: str) -> dict:
         logger.info("Found viz data in cache.")
         return cache.get(cache_id)
 
-    client = Client(access_token)
-    weekly_data, daily_df = prepare_data(client)
+    weekly_data, daily_df = prepare_data(access_token)
     logger.info("Prepared data.")
 
     results = {
@@ -525,12 +566,12 @@ def get_visualizations(access_token: str) -> dict:
         "rolling_tanda": viz_rolling_tanda(daily_df=daily_df),
         "marathon_predictor": marathon_predictor(daily_df=daily_df),
     }
-    # file_path = os.path.join(
-    #     f"{settings.STATICFILES_DIRS[0]}/dummy/", "temp_viz.pkl"
-    # )
-    #
-    # with open(file_path, "wb") as f:
-    #     pickle.dump(results, f)
+    file_path = os.path.join(
+        f"{settings.STATICFILES_DIRS[0]}/dummy/", "temp_viz.pkl"
+    )
+
+    with open(file_path, "wb") as f:
+        pickle.dump(results, f)
 
     cache.set(cache_id, results)
     logger.info("Ran computation for graphs and set cache.")

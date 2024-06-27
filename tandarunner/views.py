@@ -24,10 +24,12 @@ def index(request: HttpRequest) -> HttpResponse:
     else:
         access_token = get_access_token(user)
         logger.info("Got access token.")
+        athlete = get_athlete(access_token)
+        athlete_id = athlete["id"]
         data = {
             "athlete": get_athlete(access_token),
             "visualizations": get_visualizations(access_token.token),
-            "stats": get_stats(access_token.token),
+            "stats": get_stats(access_token, athlete_id),
         }
         logger.info("Fetched viz data for authenticated user.")
 
