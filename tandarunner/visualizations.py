@@ -28,8 +28,12 @@ def get_athlete(access_token) -> dict:
     return response.json()
 
 
-def get_stats(access_token: str, athlete_id: int) -> dict:
-    url = f"{settings.STRAVA_BASE_URL}/athletes/{athlete_id}/stats"
+def get_stats(
+    access_token: str,
+    athlete_id: int,
+    base_url: str = settings.STRAVA_BASE_URL,
+) -> dict:
+    url = f"{base_url}/athletes/{athlete_id}/stats"
     headers = {"Authorization": f"Bearer {access_token}"}
     stats = requests.get(url, headers=headers).json()
 

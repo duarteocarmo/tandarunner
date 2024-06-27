@@ -7,17 +7,17 @@ requires-python = ">=3.10"
 dependencies = [
   "django",
   "django-allauth[socialaccount]",
-  "stravalib",
   "altair",
   "pandas",
   "numpy",
   "whitenoise",
   "channels[daphne]",
   "django-debug-toolbar",
-  "litellm==1.38.12",
-  "pydantic==1.10.16",
+  "litellm",
+  "pydantic",
   "markdown",
   "Twisted[tls,http2]",
+  "instructor",
 ]
 
 
@@ -25,7 +25,14 @@ dependencies = [
 packages = ["config", "tandarunner"]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "ruff", "ipykernel", "jupyter-black"]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "ruff",
+  "ipykernel",
+  "jupyter-black",
+  "youtube-transcript-api",
+]
 
 [tool.ruff]
 exclude = [".env", ".venv", "venv", "notebooks"]
