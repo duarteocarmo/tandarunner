@@ -327,6 +327,81 @@ def viz_rolling_tanda(daily_df: pandas.DataFrame) -> dict:
     ).to_json()
 
 
+def running_heatmap(daily_df: pandas.DataFrame) -> dict:
+    daily_df["week_number"] = daily_df.index.isocalendar().week
+    daily_df["day_of_the_week_name"] = daily_df.index.strftime("%a")
+    heatmap_data = daily_df[
+        [
+            "week_number",
+            "day_of_the_week_name",
+            "distance_km",
+        ]
+    ].sort_values(["week_number"])
+
+    all_days = pandas.date_range(
+        heatmap_data.index.min(), heatmap_data.index.max(), freq="D"
+    )
+    heatmap_data = heatmap_data.reindex(all_days).fillna(0.0)
+    heatmap_data["week_number"] = heatmap_data.index.isocalendar().week
+    heatmap_data["day_of_the_week_name"] = heatmap_data.index.strftime("%a")
+    heatmap_data["month"] = heatmap_data.index.strftime("%b")
+    heatmap_data["day_of_the_month"] = heatmap_data.index.day
+
+    upper_limit = (
+        heatmap_data["distance_km"].mean()
+        + heatmap_data["distance_km"].std() * 1.5
+    )
+
+    day_order = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+    heatmap = (
+        alt.Chart(heatmap_data)
+        .mark_rect(cornerRadius=2)
+        .encode(
+            x=alt.X(
+                "week_number:O",
+                axis=alt.Axis(
+                    title=None, domain=False, ticks=False, labels=False
+                ),
+            ),
+            y=alt.Y(
+                "day_of_the_week_name:O",
+                sort=day_order,
+                axis=alt.Axis(
+                    title=None,
+                    domain=False,
+                    ticks=False,
+                ),
+            ),
+            color=alt.Color(
+                "distance_km:Q",
+                scale=alt.Scale(
+                    domain=[0, upper_limit],
+                    scheme="lightorange",
+                ),
+                legend=None,
+            ),
+            tooltip=[
+                alt.Tooltip(
+                    "distance_km:Q", title="Distance (km)", format=".1f"
+                ),
+                alt.Tooltip("month:O", title="Month"),
+                alt.Tooltip("day_of_the_month:O", title="Day of the month"),
+            ],
+        )
+        .configure_scale(bandPaddingInner=0.20)
+        .configure_view(stroke=None)
+    )
+
+    return (
+        heatmap.properties(
+            width="container",
+            height=150,
+            title="Running heatmap",
+        ).interactive()
+    ).to_json()
+
+
 def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
     pace_ticks_values = list(range(240, 60 * 8, 15))
 
@@ -569,6 +644,7 @@ def get_visualizations(access_token: str) -> dict:
         "weekly_chart": viz_weekly_chart(weekly_data),
         "rolling_tanda": viz_rolling_tanda(daily_df=daily_df),
         "marathon_predictor": marathon_predictor(daily_df=daily_df),
+        "running_heatmap": running_heatmap(daily_df=daily_df),
     }
     file_path = os.path.join(
         f"{settings.STATICFILES_DIRS[0]}/dummy/", "temp_viz.pkl"
