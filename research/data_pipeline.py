@@ -8,17 +8,16 @@ client = instructor.from_litellm(completion)
 
 
 def main():
-    running_activities = get_data()
-
     video_id = "59aEpVvRXxI"
+
+    running_activities = get_data()
     transcript = fetch_transcript(video_id)
 
 
 def get_data():
     running_activities = pandas.read_csv(
-        "../static/dummy/running_activities.csv"
+        "./static/dummy/running_activities.csv"
     )
-    print(running_activities.shape)
 
     running_activities.rename(
         columns={
@@ -49,3 +48,6 @@ def fetch_transcript(video_id: str, language_out: str = "en"):
         )
 
     return formatter.format_transcript(transcript)
+
+if __name__ == "__main__":
+    main()

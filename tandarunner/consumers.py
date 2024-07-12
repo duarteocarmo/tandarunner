@@ -15,7 +15,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.messages = []
         self.user = self.scope["user"]
+
         await super().connect()
+
+        await self.send_first_message()
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -68,6 +71,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         await self.send(text_data=message)
         await self.close()
+
+    async def send_first_message(self):
+        self.message_id = f"message-{uuid.uuid4().hex}"
+        # TODO: this comes from an insight now :)
+        text = "Welcome to the chat! How can I help you today?"
+        user_message_html = render_to_string(
+            "partials/message.html",
+            {
+                "message_text": text,
+                "is_system": True,
+                "message_id": self.message_id,
+            },
+        )
+        await self.send(text_data=user_message_html)
+        self.messages.append(
+            {
+                "content": text,
+                "role": "system",
+            }
+        )
 
     async def generate_ai_response(self):
         response = await generate_response_to(self.messages)

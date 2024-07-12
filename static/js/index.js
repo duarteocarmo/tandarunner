@@ -1,4 +1,4 @@
-// add visualizastions for graphs
+// add visualizations for graphs
 document.addEventListener("DOMContentLoaded", function () {
   const visualizations = JSON.parse(
     document.getElementById("visualizations").textContent
@@ -50,6 +50,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 document.addEventListener("htmx:oobBeforeSwap", function (event) {
+  var numMessages = document.getElementById("message-list").childElementCount;
+  if (numMessages == 0) {
+    return;
+  }
+
   state.generating = true;
 
   const messageInput = document.getElementById("messageinput");

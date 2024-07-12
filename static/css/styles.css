@@ -5,6 +5,10 @@
   /* border: 0.5px solid black; */
 }
 
+:root {
+  --border-color: black; /* You can replace #cccccc with your desired color */
+}
+
 .vega-actions {
   display: none;
 }
@@ -23,11 +27,10 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  width: 90%;
-  max-width: 1200px;
+  width: 85%;
   overflow: hidden;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin-top: 3px;
+  margin-bottom: 3px;
 }
 
 button {
@@ -49,7 +52,7 @@ button {
 }
 
 .main-content {
-  width: 60%;
+  width: 70%;
   padding: 10px;
 }
 
@@ -58,7 +61,7 @@ button {
   border-radius: 5px;
   height: 75vh;
   overflow-y: auto;
-  border: 0.5px solid black;
+  border: 0.5px solid var(--border-color);
 }
 
 .visualization > div {
@@ -78,7 +81,7 @@ button {
   flex-direction: column;
   justify-content: space-between;
   height: 75vh;
-  border: 0.5px solid black;
+  border: 0.5px solid var(--border-color);
 }
 
 .chat-messages {
@@ -106,7 +109,7 @@ button {
   max-width: 100%;
   display: flex;
   align-items: flex-start;
-  border: 0.5px solid black;
+  border: 0.5px solid var(--border-color);
 }
 
 .chat-message p {
@@ -148,5 +151,8 @@ button {
   }
   .chat-message img.logo {
     filter: invert(1);
+  }
+  :root {
+    --border-color: white;
   }
 }

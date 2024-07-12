@@ -5,7 +5,7 @@ description = "A nice description"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-  "django",
+  "django==5.1b1",
   "django-allauth[socialaccount]",
   "altair",
   "pandas",
@@ -19,8 +19,13 @@ dependencies = [
   "Twisted[tls,http2]",
   "instructor",
   "diskcache",
+  "django-extensions",
+  "youtube-transcript-api",
 ]
 
+[tool.pyright]
+venvPath = "."
+venv = ".env"
 
 [tool.setuptools]
 packages = ["config", "tandarunner"]
