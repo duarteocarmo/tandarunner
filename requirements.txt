@@ -56,17 +56,22 @@ cryptography==42.0.8
     #   service-identity
 daphne==4.1.2
     # via channels
+diskcache==5.6.3
+    # via tandarunner (pyproject.toml)
 distro==1.9.0
     # via openai
-django==5.0.6
+django==5.1b1
     # via
     #   tandarunner (pyproject.toml)
     #   channels
     #   django-allauth
     #   django-debug-toolbar
+    #   django-extensions
 django-allauth==0.63.3
     # via tandarunner (pyproject.toml)
 django-debug-toolbar==4.4.2
+    # via tandarunner (pyproject.toml)
+django-extensions==3.2.3
     # via tandarunner (pyproject.toml)
 docstring-parser==0.16
     # via instructor
@@ -199,6 +204,7 @@ requests==2.32.3
     #   litellm
     #   requests-oauthlib
     #   tiktoken
+    #   youtube-transcript-api
 requests-oauthlib==2.0.0
     # via django-allauth
 rich==13.7.1
@@ -266,6 +272,8 @@ whitenoise==6.6.0
     # via tandarunner (pyproject.toml)
 yarl==1.9.4
     # via aiohttp
+youtube-transcript-api==0.6.2
+    # via tandarunner (pyproject.toml)
 zipp==3.19.2
     # via importlib-metadata
 zope-interface==6.4.post2

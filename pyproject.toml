@@ -21,6 +21,7 @@ dependencies = [
   "diskcache",
   "django-extensions",
   "youtube-transcript-api",
+  "django-extensions"
 ]
 
 [tool.pyright]
