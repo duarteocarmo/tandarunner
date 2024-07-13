@@ -410,6 +410,10 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
     daily_df["shape"] = daily_df.index.to_series().apply(
         lambda x: "square" if x == last_date else "circle"
     )
+    min_pace, max_pace = (
+        daily_df["pace_sec_per_km"].min(),
+        daily_df["pace_sec_per_km"].max(),
+    )
 
     daily_line = (
         alt.Chart(
@@ -419,7 +423,7 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
         )
         .mark_point(
             filled=True,
-            size=80,
+            size=70,
         )
         .encode(
             x=alt.X(
@@ -432,7 +436,7 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
                 scale=alt.Scale(
                     reverse=True,
                     zero=False,
-                    domain=(min(pace_ticks_values), max(pace_ticks_values)),
+                    domain=(min_pace, max_pace),
                 ),
                 title="Pace (mm:ss)",
                 axis=alt.Axis(
@@ -450,11 +454,6 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
             color=alt.Color(
                 "date_factor:Q",
                 scale=alt.Scale(scheme="lightgreyred"),
-                legend=None,
-            ),
-            shape=alt.Shape(
-                "shape:N",
-                scale=alt.Scale(range=["square", "circle"]),
                 legend=None,
             ),
         )
@@ -499,7 +498,7 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
                 scale=alt.Scale(
                     reverse=True,
                     zero=False,
-                    domain=(min(pace_ticks_values), max(pace_ticks_values)),
+                    domain=(min_pace, max_pace),
                 ),
                 axis=alt.Axis(
                     values=pace_ticks_values,
@@ -510,10 +509,7 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
                 "marathon_time:N",
                 title="Marathon Time",
                 scale=alt.Scale(scheme="turbo"),
-                legend=alt.Legend(
-                    labelExpr="floor(datum.value) + ':' + (floor((datum.value % 1) * 60) < 10 ? '0' : '') + floor((datum.value % 1) * 60)",
-                    title=None,
-                ),
+                legend=None,
             ),
             tooltip=[
                 alt.Tooltip("km_day:Q", title="Distance (km)"),
@@ -558,7 +554,7 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
                 scale=alt.Scale(
                     reverse=True,
                     zero=False,
-                    domain=(min(pace_ticks_values), max(pace_ticks_values)),
+                    domain=(min_pace, max_pace),
                 ),
                 axis=alt.Axis(
                     values=pace_ticks_values,
@@ -575,8 +571,6 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
                 ),
             ),
         )
-        .properties(width=800, height=500, title="Pace and daily distance")
-        .interactive()
     )
 
     daily_df["Legend"] = "Current form"
@@ -600,14 +594,13 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
                 scale=alt.Scale(
                     reverse=True,
                     zero=False,
-                    domain=(min(pace_ticks_values), max(pace_ticks_values)),
+                    domain=(min_pace, max_pace),
                 ),
                 axis=alt.Axis(
                     values=pace_ticks_values,
                     labelExpr="datum.value > 0 ? timeFormat(datum.value * 1000, '%M:%S') : ''",
                 ),
             ),
-            # color=alt.value("#142ef5"),
             color=alt.Color(
                 "Legend:N",
                 legend=alt.Legend(title=None),
@@ -615,15 +608,47 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
             ),
             tooltip=tooltip,
         )
-        .properties(width=800, height=500, title="Pace and daily distance")
-        .interactive()
+    )
+
+    # Create a dataset for the labels
+    label_data = times_df[times_df["km_day"] == 10].copy()
+    label_data["label"] = label_data["marathon_time"].apply(
+        lambda x: f"{int(x)}:{int((x % 1) * 60):02d}"
+    )
+
+    # Add text labels
+    text_labels = (
+        alt.Chart(label_data)
+        .mark_text(
+            align="center",
+            baseline="middle",
+            fontSize=15,
+            angle=20,
+            dy=-10,
+        )
+        .encode(
+            x=alt.X("km_day:Q"),
+            y=alt.Y("pace:Q"),
+            text="label:N",
+            color=alt.Color(
+                "marathon_time:N",
+                scale=alt.Scale(scheme="turbo"),
+                legend=None,
+            ),
+        )
     )
 
     return (
-        (marathon_times + daily_line + tanda_progression + current_form)
+        (
+            marathon_times
+            + daily_line
+            + tanda_progression
+            + current_form
+            + text_labels
+        )
         .properties(
             width="container",
-            height=300,
+            height=400,
             title="Marathon Time Predictor",
         )
         .interactive()

@@ -4,16 +4,30 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("visualizations").textContent
   );
 
-  const vega_theme = "default";
+  function getVegaTheme() {
+    return window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "default";
+  }
 
-  Object.keys(visualizations).forEach(function (key) {
-    const spec = JSON.parse(visualizations[key]);
-    vegaEmbed("#" + key, spec, {
-      renderer: "svg",
-      actions: false,
-      theme: vega_theme,
+  function applyVegaTheme() {
+    const vega_theme = getVegaTheme();
+    Object.keys(visualizations).forEach(function (key) {
+      const spec = JSON.parse(visualizations[key]);
+      vegaEmbed("#" + key, spec, {
+        renderer: "svg",
+        actions: false,
+        theme: vega_theme,
+      });
     });
-  });
+  }
+
+  applyVegaTheme();
+
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", applyVegaTheme);
 });
 
 // adjust text box height based on content

@@ -28,9 +28,10 @@ body {
   display: flex;
   flex-direction: column;
   width: 85%;
+  max-width: 1280px;
   overflow: hidden;
-  margin-top: 3px;
-  margin-bottom: 3px;
+  /* margin-top: 3px; */
+  /* margin-bottom: 3px; */
 }
 
 button {
@@ -59,7 +60,7 @@ button {
 .visualization {
   padding: 10px;
   border-radius: 5px;
-  height: 75vh;
+  height: 80vh;
   overflow-y: auto;
   border: 0.5px solid var(--border-color);
 }
@@ -80,7 +81,7 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 75vh;
+  height: 80vh;
   border: 0.5px solid var(--border-color);
 }
 
