@@ -8,5 +8,9 @@ async def generate_response_to(list_of_messages: list[dict]):
         model="gpt-3.5-turbo",
         messages=list_of_messages,
         stream=True,
-        # mock_response="test",
     )
+
+
+async def generate_insight_for(athlete):
+    first_name = athlete["athlete"]["firstname"]
+    return f"This is a message for {first_name}! Welcome to the chat!"
