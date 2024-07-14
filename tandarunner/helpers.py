@@ -1,7 +1,6 @@
 import logging
 from datetime import timedelta
 
-import pandas as pd
 import requests
 from allauth.socialaccount.models import SocialToken
 from django.conf import settings
@@ -63,15 +62,3 @@ def get_access_token(user):
         refresh_token(access_token)
 
     return access_token
-
-
-def get_dummy_activities() -> pd.DataFrame:
-    return pd.read_csv("./static/dummy/running_activities.csv").rename(
-        columns={
-            "distance": "distance_meters",
-            "moving_time": "moving_time_seconds",
-            "start_date_local": "date",
-            "average_speed": "average_speed_meters_per_second",
-        },
-        inplace=False,
-    )

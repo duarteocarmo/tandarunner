@@ -8,7 +8,7 @@ from pydantic import ValidationError
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 
-import tandarunner.scripts.types_prompts as TandaTypes
+import tandarunner.tools.types_prompts as TandaTypes
 from tandarunner.models import TrainingInsight
 
 client = instructor.from_litellm(completion)

@@ -211,7 +211,7 @@ def prepare_data(access_token: str) -> tuple:
     )
     daily_df["Latest run"] = "Latest run"
 
-    return weekly_data, daily_df
+    return weekly_data, daily_df, pandas.DataFrame(running_activities)
 
 
 def viz_weekly_chart(
@@ -662,7 +662,7 @@ def get_visualizations(access_token: str) -> dict:
         logger.info("Found viz data in cache.")
         return cache.get(cache_id)
 
-    weekly_data, daily_df = prepare_data(access_token)
+    weekly_data, daily_df, running_activities = prepare_data(access_token)
     logger.info("Prepared data.")
 
     results = {
@@ -670,6 +670,7 @@ def get_visualizations(access_token: str) -> dict:
         "rolling_tanda": viz_rolling_tanda(daily_df=daily_df),
         "marathon_predictor": marathon_predictor(daily_df=daily_df),
         "running_heatmap": running_heatmap(daily_df=daily_df),
+        "running_activities": clean_df(running_activities).to_json(),
     }
     file_path = os.path.join(
         f"{settings.STATICFILES_DIRS[0]}/dummy/", "temp_viz.pkl"
@@ -690,3 +691,20 @@ def get_dummy_visualizations() -> dict:
     )
     with open(file_path, "rb") as f:
         return pickle.load(f)
+
+
+def clean_df(df: pandas.DataFrame) -> pandas.DataFrame:
+    df = df.copy()
+    columns = {
+        "distance": "distance_meters",
+        "moving_time": "moving_time_seconds",
+        "start_date_local": "date",
+        "average_speed": "average_speed_meters_per_second",
+        "average_heartrate": "average_heartrate",
+        "max_heartrate": "max_heartrate",
+    }
+    return df[columns.keys()].rename(columns=columns, inplace=False)
+
+
+def get_dummy_activities() -> pandas.DataFrame:
+    return clean_df(pandas.read_csv("./static/dummy/running_activities.csv"))

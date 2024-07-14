@@ -1,28 +1,31 @@
 import json
 import logging
 import uuid
+from typing import Any, Dict, List
 
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.template.loader import render_to_string
 from litellm import stream_chunk_builder
 
-from tandarunner.chat import generate_insight_for, generate_response_to
+from tandarunner.chat import (
+    generate_recommendation_prompt,
+    generate_response_to,
+)
 
 logger = logging.getLogger(__name__)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.messages = []
+        self.messages: List[Dict[str, str]] = []
         self.user = self.scope["user"]
         self.session = await sync_to_async(self.scope["session"].load)()
-
         await super().connect()
-
         await self.send_first_message()
 
-    async def receive(self, text_data):
+    async def receive(self, text_data: str):
+        print(f"{self.messages=}")
         text_data_json = json.loads(text_data)
         logger.info(f"Received: {text_data_json}")
 
@@ -33,6 +36,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message_text = text_data_json["message"]
         self.messages.append({"content": message_text, "role": "user"})
 
+        await self.send_user_message(message_text)
+        await self.send_ai_response()
+
+    async def send_user_message(self, message_text: str):
         await self.send_html(
             "partials/message.html",
             {
@@ -41,8 +48,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             },
         )
 
+    async def send_ai_response(self):
         self.message_id = f"message-{uuid.uuid4().hex}"
-
         await self.send_html(
             "partials/message.html",
             {
@@ -61,19 +68,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
         response = await generate_response_to(self.messages)
         chunks = []
         async for chunk in response:
-            text = chunk.choices[0].delta.content or ""
-            text = text.replace("\n", "<br>")
-            await self.send(
-                text_data=f"""<div id='{self.message_id}' hx-swap-oob="beforeend">{text}</div>"""
-            )
+            await self.send_chunk(chunk)
             chunks.append(chunk)
 
-        final_message = (
+        final_message = self.get_final_message(chunks)
+        await self.send_final_message(final_message)
+        self.messages.append({"content": final_message, "role": "system"})
+
+    async def send_chunk(self, chunk: Any):
+        text = chunk.choices[0].delta.content or ""
+        text = text.replace("\n", "<br>")
+        await self.send(
+            text_data=f"""<div id='{self.message_id}' hx-swap-oob="beforeend">{text}</div>"""
+        )
+
+    def get_final_message(self, chunks: List[Any]) -> str:
+        return (
             stream_chunk_builder(chunks, messages=self.messages)
             .choices[0]
             .message.content
         )
 
+    async def send_final_message(self, final_message: str):
         await self.send_html(
             "partials/final_message.html",
             {
@@ -82,21 +98,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
             },
         )
 
-        self.messages.append(
-            {
-                "content": final_message,
-                "role": "system",
-            }
-        )
-
     async def send_first_message(self):
         self.message_id = f"message-{uuid.uuid4().hex}"
 
         if self.user.is_anonymous:
-            text = "Welcome to the chat! Please login to use the chat feature."
+            await self.send_anonymous_welcome_message()
         else:
-            text = await generate_insight_for(self.session)
+            await self.send_authenticated_first_message()
 
+    async def send_anonymous_welcome_message(self):
+        text = "Welcome to the chat! Please login to use the chat feature."
         await self.send_html(
             "partials/message.html",
             {
@@ -105,19 +116,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "message_id": self.message_id,
             },
         )
+        self.messages.append({"content": text, "role": "system"})
 
-        self.messages.append(
+    async def send_authenticated_first_message(self):
+        await self.send_html(
+            "partials/message.html",
             {
-                "content": text,
-                "role": "system",
-            }
+                "message_text": "",
+                "is_system": True,
+                "message_id": self.message_id,
+            },
         )
 
-    async def send_html(self, template, template_args):
-        message_html = render_to_string(
-            template,
-            template_args,
+        recommendation_prompt = await generate_recommendation_prompt(
+            self.session
         )
+        self.messages.append(
+            {"content": recommendation_prompt, "role": "system"}
+        )
+        await self.generate_ai_response()
+
+    async def send_html(self, template: str, template_args: Dict[str, Any]):
+        message_html = render_to_string(template, template_args)
         await self.send(text_data=message_html)
 
     async def reset_chat(self):

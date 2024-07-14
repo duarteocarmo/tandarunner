@@ -6,7 +6,7 @@ from hashlib import md5
 import pandas as pd
 from pydantic import BaseModel, Field, field_validator
 
-from tandarunner.helpers import get_dummy_activities
+from tandarunner.visualizations import get_dummy_activities
 
 # THIS IS HACKY, BUT IT WORKS
 
@@ -102,4 +102,30 @@ Follow these instructions:
 PROMPT_GET_QA_USER = """
 I would like to understand if we are seeing the following: {observation}
 My goal is to understand if it will lead to the following outcome: {outcome}
+""".strip()
+
+RECOMMENDATION_PROMPT = """
+You are a very experienced running coach.
+Your research has lead to the conclusion that the following observation:
+
+'{observation}'
+
+Leads to the following outcome:
+
+'{outcome}'
+
+When investigating this, you ran the following code on the athletes's data:
+
+```python
+{code}
+```
+
+Which, when executed, produced the following output:
+
+```
+{execution_output}
+```
+The athlete's name is {athlete_name}.
+Imagine you are having a conversation with the athlete.
+What recommendation would you give them based on this insight?
 """.strip()
