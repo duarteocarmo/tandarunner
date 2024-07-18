@@ -703,6 +703,12 @@ def clean_df(df: pandas.DataFrame) -> pandas.DataFrame:
         "average_heartrate": "average_heartrate",
         "max_heartrate": "max_heartrate",
     }
+
+    for col in columns.keys():
+        if col not in df.columns:
+            df[col] = numpy.nan
+            logger.warning(f"Column {col} not found in DataFrame.")
+
     return df[columns.keys()].rename(columns=columns, inplace=False)
 
 
