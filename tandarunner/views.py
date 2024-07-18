@@ -23,7 +23,6 @@ def index(request: HttpRequest) -> HttpResponse:
         logger.info("Fetched dummy data for anonymous user.")
     else:
         access_token = get_access_token(user)
-        user.test_data = {"data": "test"}
         logger.info("Got access token.")
 
         athlete = get_athlete(access_token)

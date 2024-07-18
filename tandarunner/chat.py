@@ -11,7 +11,7 @@ litellm.cache = Cache(ttl=60 * 5)
 
 async def generate_response_to(list_of_messages: list[dict]):
     return await acompletion(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         messages=list_of_messages,
         stream=True,
         caching=True,
@@ -22,7 +22,9 @@ async def generate_recommendation_prompt(session: dict) -> str:
     running_activities = session["running_activities"]
     athlete_name = session.get("athlete", {}).get("firstname", "UNKNOWN")
 
-    first_insight = await sync_to_async(TrainingInsight.objects.first)()
+    first_insight = await sync_to_async(
+        TrainingInsight.objects.order_by("?").first
+    )()
 
     prompt = await sync_to_async(first_insight.generate_prompt)(
         user_df=pd.read_json(running_activities), athlete_name=athlete_name

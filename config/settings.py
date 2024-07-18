@@ -172,7 +172,7 @@ SOCIALACCOUNT_PROVIDERS = {
     "strava": {
         "APP": {
             "client_id": "125463",
-            "secret": "017fafbf5c5067490f1382fd3454c30cdb61f4b0",
+            "secret": "eaf68d5ec4c082ee6e700a6c05cffcf29b018952",
         }
     }
 }
