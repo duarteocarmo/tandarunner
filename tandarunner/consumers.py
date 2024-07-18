@@ -5,6 +5,7 @@ from typing import Any, Dict, List
 
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.core.cache import cache
 from django.template.loader import render_to_string
 from litellm import stream_chunk_builder
 
@@ -118,7 +119,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         self.messages.append({"content": text, "role": "system"})
 
+
     async def send_authenticated_first_message(self):
+        cache_key = f"recommendation_prompt_{self.user.id}"
+        if cache.get(cache_key):
+            await cache.get(cache_key)
+
+
         await self.send_html(
             "partials/message.html",
             {
@@ -141,6 +148,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.messages.append(
             {"content": recommendation_prompt, "role": "system"}
         )
+        cache.set(cache_key, recommendation_prompt, timeout=60 * 5)
         await self.generate_ai_response()
 
     async def send_html(self, template: str, template_args: Dict[str, Any]):

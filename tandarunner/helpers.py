@@ -23,6 +23,7 @@ def refresh_token(access_token):
         "grant_type": "refresh_token",
         "refresh_token": access_token.token_secret,
     }
+
     response = requests.post("https://www.strava.com/oauth/token", data=params)
 
     if response.status_code != 200:
@@ -58,6 +59,7 @@ def get_access_token(user):
     access_token = SocialToken.objects.filter(
         account__user=user, account__provider=account_provider
     ).last()
+
     if access_token.expires_at <= timezone.now():
         refresh_token(access_token)
 
