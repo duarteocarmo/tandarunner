@@ -94,6 +94,9 @@ def get_code_for_insight(
 
 def inspect_data():
     existing_insights = TrainingInsight.objects.all()
+    insights_list = [insight.__dict__ for insight in existing_insights]
+    breakpoint()
+
     for i in existing_insights:
         print("ID: ", i.insight_id)
         print("Source ID: ", i.source_id)
@@ -149,4 +152,5 @@ def fetch():
 
 def run():
     # fetch()
+
     inspect_data()

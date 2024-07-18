@@ -128,9 +128,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
             },
         )
 
-        recommendation_prompt = await generate_recommendation_prompt(
-            self.session
-        )
+        try:
+            recommendation_prompt = await generate_recommendation_prompt(
+                self.session
+            )
+        except Exception as e:
+            logger.error(e)
+            recommendation_prompt = (
+                "Sorry, I am unable to generate a recommendation at this time."
+            )
+
         self.messages.append(
             {"content": recommendation_prompt, "role": "system"}
         )
