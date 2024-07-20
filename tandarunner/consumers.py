@@ -119,12 +119,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         self.messages.append({"content": text, "role": "system"})
 
-
     async def send_authenticated_first_message(self):
         cache_key = f"recommendation_prompt_{self.user.id}"
-        if cache.get(cache_key):
-            await cache.get(cache_key)
-
+        cached_prompt = cache.get(cache_key)
 
         await self.send_html(
             "partials/message.html",
@@ -135,20 +132,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             },
         )
 
-        try:
-            recommendation_prompt = await generate_recommendation_prompt(
-                self.session
-            )
-        except Exception as e:
-            logger.error(e)
-            recommendation_prompt = (
-                "Sorry, I am unable to generate a recommendation at this time."
-            )
+        if cached_prompt:
+            recommendation_prompt = cached_prompt
+        else:
+            try:
+                recommendation_prompt = await generate_recommendation_prompt(
+                    self.session
+                )
+                cache.set(cache_key, recommendation_prompt, timeout=60 * 5)
+            except Exception as e:
+                logger.error(e)
+                recommendation_prompt = "Sorry, I am unable to generate a recommendation at this time."
 
         self.messages.append(
             {"content": recommendation_prompt, "role": "system"}
         )
-        cache.set(cache_key, recommendation_prompt, timeout=60 * 5)
         await self.generate_ai_response()
 
     async def send_html(self, template: str, template_args: Dict[str, Any]):
