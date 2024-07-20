@@ -656,7 +656,7 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
     ).to_json()
 
 
-def get_visualizations(access_token: str) -> dict:
+def get_visualizations(access_token: str, athlete_id: int) -> dict:
     cache_id = f"viz-{access_token}"
     if cache_id in cache:
         logger.info("Found viz data in cache.")
@@ -672,12 +672,15 @@ def get_visualizations(access_token: str) -> dict:
         "running_heatmap": running_heatmap(daily_df=daily_df),
         "running_activities": clean_df(running_activities).to_json(),
     }
-    file_path = os.path.join(
-        f"{settings.STATICFILES_DIRS[0]}/dummy/", "temp_viz.pkl"
-    )
 
-    with open(file_path, "wb") as f:
-        pickle.dump(results, f)
+    if athlete_id == settings.DUARTE_ATHLETE_ID:
+        file_path = os.path.join(
+            f"{settings.STATICFILES_DIRS[0]}/dummy/", "temp_viz.pkl"
+        )
+
+        with open(file_path, "wb") as f:
+            pickle.dump(results, f)
+        logger.info("Saved dummy data from Duarte.")
 
     cache.set(cache_id, results)
     logger.info("Ran computation for graphs and set cache.")

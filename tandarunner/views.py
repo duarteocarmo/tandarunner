@@ -27,18 +27,20 @@ def index(request: HttpRequest) -> HttpResponse:
 
         athlete = get_athlete(access_token)
         athlete_id = athlete["id"]
-        visualizations = get_visualizations(access_token.token)
+        visualizations = get_visualizations(access_token.token, athlete_id)
         running_activities = visualizations.pop("running_activities")
+        stats = get_stats(access_token.token, athlete_id)
         logger.info("Got athlete data.")
 
         data = {
             "athlete": athlete,
-            "visualizations": get_visualizations(access_token.token),
-            "stats": get_stats(access_token, athlete_id),
+            "visualizations": visualizations,
+            "stats": stats,
         }
 
-        request.session["athlete"] = athlete
-        request.session["running_activities"] = running_activities
+        request.session.update(
+            {"athlete": athlete, "running_activities": running_activities}
+        )
         logger.info("Prepared data for rendering.")
 
     return TemplateResponse(request, "index.html", data)
