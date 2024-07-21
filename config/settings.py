@@ -27,6 +27,7 @@ SECRET_KEY = (
 
 DEBUG = os.getenv("DEBUG", "FALSE") == "TRUE"
 DUARTE_ATHLETE_ID = 44717295
+MODEL_ID = "gpt-4o-mini"
 
 ALLOWED_HOSTS = ["*"]
 INTERNAL_IPS = [
