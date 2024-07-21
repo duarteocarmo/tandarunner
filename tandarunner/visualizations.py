@@ -699,6 +699,8 @@ def get_dummy_visualizations() -> dict:
 def clean_df(df: pandas.DataFrame) -> pandas.DataFrame:
     df = df.copy()
     columns = {
+        "name": "name",
+        "sport_type": "sport_type",
         "distance": "distance_meters",
         "moving_time": "moving_time_seconds",
         "start_date_local": "date",

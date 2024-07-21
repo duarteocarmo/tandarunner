@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 async def generate_response_to(list_of_messages: list[dict]):
     return await acompletion(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=list_of_messages,
         stream=True,
         caching=True,
