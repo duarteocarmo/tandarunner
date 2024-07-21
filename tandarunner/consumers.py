@@ -108,7 +108,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.send_authenticated_first_message()
 
     async def send_anonymous_welcome_message(self):
-        text = "Welcome to the chat! Please login to use the chat feature."
+        text = "Please login to receive personalized recommendations from the Tanda agent!"
         await self.send_html(
             "partials/message.html",
             {

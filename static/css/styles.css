@@ -138,11 +138,15 @@ button {
   }
 
   .visualization {
-    max-height: calc(50vh);
+    max-height: calc(60vh);
   }
 
   .chat-box {
     max-height: calc(30vh);
+  }
+
+  .container {
+    width: 100%;
   }
 }
 
