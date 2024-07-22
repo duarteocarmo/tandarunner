@@ -142,7 +142,7 @@ button {
   }
 
   .chat-box {
-    max-height: calc(30vh);
+    max-height: calc(60vh);
   }
 
   .container {
