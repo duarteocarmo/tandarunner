@@ -47,6 +47,6 @@ Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-sta
 - [x] Adjust progression graph, so you can actually see progression...
 - [x] Yearly distance stats
 - [x] GitHub style running consistency graph
-- [ ] Build insights generation pipeline (on login/page render)
-- [ ] Better experience on mobile
-- [ ] Ship that shit.
+- [x] Build insights generation pipeline (on login/page render)
+- [x] Better experience on mobile
+- [x] Ship that shit.
