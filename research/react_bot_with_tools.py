@@ -9,7 +9,7 @@ import requests
 from annotated_docs.json_schema import as_json_schema
 
 openai_client: openai.OpenAI = openai.OpenAI(
-    api_key="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"
+    api_key="LEAKED"
 )
 
 
