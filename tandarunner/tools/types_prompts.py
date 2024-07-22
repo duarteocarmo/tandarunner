@@ -128,6 +128,4 @@ Which, when executed, produced the following output:
 The athlete's name is {athlete_name}.
 Imagine you are having a conversation with the athlete.
 What recommendation would you give them based on this insight?
-Be clear and concise and don't be overly verbose.
-Your recommendation should be actionable and easy to understand.
 """.strip()

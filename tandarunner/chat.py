@@ -9,7 +9,8 @@ from litellm.caching import Cache
 from tandarunner.models import TrainingInsight
 
 litellm.set_verbose = False
-litellm.cache = Cache(ttl=60 * 60 * 6)  # 6 hours
+litellm.cache = Cache(ttl=60 * 60 * 6)
+litellm.max_budget = 5.00
 
 logger = logging.getLogger(__name__)
 

@@ -139,7 +139,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 recommendation_prompt = await generate_recommendation_prompt(
                     self.session
                 )
-                cache.set(cache_key, recommendation_prompt, timeout=60 * 5)
+                cache.set(
+                    cache_key, recommendation_prompt, timeout=60 * 60 * 6
+                )  # 6 hours
             except Exception as e:
                 logger.error(e)
                 recommendation_prompt = "Sorry, I am unable to generate a recommendation at this time."
