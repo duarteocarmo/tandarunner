@@ -128,4 +128,7 @@ Which, when executed, produced the following output:
 The athlete's name is {athlete_name}.
 Imagine you are having a conversation with the athlete.
 What recommendation would you give them based on this insight?
+Format things like a conversation, not like a letter (e.g., no "Dear Athlete", or "Sincerely, Coach").
+Make sure to mention the observation and outcome in your recommendation.
+A good recommendation should be personal and actionable.
 """.strip()
