@@ -9,14 +9,14 @@
                       content="width=device-width, height=device-height, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
                 <meta name="color-scheme" content="light dark" />
                 <title>Tanda Assistant</title>
-                <link rel="stylesheet" href="{% static 'css/styles.css' %}">
                 <link rel="icon" href="data:image/svg+xml,
                         <svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22>
                                 <text y=%22.9em%22 font-size=%2290%22>🎽</text>
                         </svg>
                         ">
-                        <script src="{% static 'js/index.js' %}"></script>
                         {% load cache %}
+                        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+                        <script src="{% static 'js/index.js' %}"></script>
                         <script src="https://cdn.jsdelivr.net/npm/vega@5.28.0"></script>
                         <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.18.1"></script>
                         <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.25.0"></script>
@@ -24,6 +24,9 @@
                                 integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
                                 crossorigin="anonymous"></script>
                         <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
+                        <script defer
+                                data-domain="tandarunner.duarteocarmo.com"
+                                src="https://plausible.io/js/script.js"></script>
                         {% cache 600 header %}
                 {% endcache %}
         </head>
