@@ -1,26 +1,29 @@
+import io
 import logging
 
 import pandas as pd
 from asgiref.sync import sync_to_async
 from django.conf import settings
-from litellm import acompletion, litellm
-from litellm.caching import Cache
+from openai import AsyncOpenAI
 
 from tandarunner.models import TrainingInsight
-
-litellm.set_verbose = False
-litellm.cache = Cache(ttl=60 * 60 * 6)
-litellm.max_budget = 5.00
 
 logger = logging.getLogger(__name__)
 
 
-async def generate_response_to(list_of_messages: list[dict]):
-    return await acompletion(
+def _get_client() -> AsyncOpenAI:
+    return AsyncOpenAI(
+        base_url=settings.OPENROUTER_BASE_URL,
+        api_key=settings.OPENROUTER_API_KEY,
+    )
+
+
+async def generate_response_to(list_of_messages: list):
+    client = _get_client()
+    return await client.chat.completions.create(
         model=settings.MODEL_ID,
         messages=list_of_messages,
         stream=True,
-        caching=True,
     )
 
 
@@ -36,7 +39,7 @@ def fetch_recommendation_prompt(session: dict, retries: int = 3) -> str:
         try:
             first_insight = TrainingInsight.objects.order_by("?").first()
             prompt = first_insight.generate_prompt(
-                user_df=pd.read_json(running_activities),
+                user_df=pd.read_json(io.StringIO(running_activities)),
                 athlete_name=athlete_name,
             )
             return prompt

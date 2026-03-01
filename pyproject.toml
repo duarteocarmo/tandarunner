@@ -3,7 +3,7 @@ name = "tandarunner"
 version = "24.4.13"
 description = "A nice description"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 dependencies = [
   "django==5.1b1",
   "django-allauth[socialaccount]",
@@ -13,7 +13,7 @@ dependencies = [
   "whitenoise",
   "channels[daphne]",
   "django-debug-toolbar",
-  "litellm",
+  "openai",
   "pydantic",
   "markdown",
   "Twisted[tls,http2]",
@@ -21,24 +21,17 @@ dependencies = [
   "diskcache",
   "django-extensions",
   "youtube-transcript-api",
-  "django-extensions"
 ]
 
-[tool.pyright]
-venvPath = "."
-venv = ".env"
-
-[tool.setuptools]
-packages = ["config", "tandarunner"]
-
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
   "pytest",
   "pytest-cov",
   "ruff",
   "ipykernel",
   "jupyter-black",
-  "youtube-transcript-api",
+  "ty",
+  "deptry",
 ]
 
 [tool.ruff]
@@ -49,6 +42,22 @@ line-length = 79
 ignore = ["E501"]
 select = ["E", "F", "I", "W"]
 fixable = ["I", "F"]
+
+[tool.ty.src]
+exclude = ["notebooks", "research"]
+
+[tool.ty.rules]
+unresolved-attribute = "ignore"
+unresolved-import = "ignore"
+invalid-method-override = "warn"
+invalid-return-type = "warn"
+
+[tool.deptry]
+extend_exclude = ["notebooks", "research"]
+
+[tool.deptry.per_rule_ignores]
+DEP002 = ["whitenoise", "daphne", "django-debug-toolbar", "django-extensions", "Twisted", "diskcache"]
+DEP003 = ["asgiref", "requests"]
 
 [tool.coverage.paths]
 source = ["src"]

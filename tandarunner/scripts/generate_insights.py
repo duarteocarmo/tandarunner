@@ -2,8 +2,9 @@ import logging
 from types import SimpleNamespace
 
 import instructor
+from django.conf import settings
 from django.db import transaction
-from litellm import completion
+from openai import OpenAI
 from pydantic import ValidationError
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
@@ -11,13 +12,17 @@ from youtube_transcript_api.formatters import TextFormatter
 import tandarunner.tools.types_prompts as TandaTypes
 from tandarunner.models import TrainingInsight
 
-client = instructor.from_litellm(completion)
-
+client = instructor.from_openai(
+    OpenAI(
+        base_url=settings.OPENROUTER_BASE_URL,
+        api_key=settings.OPENROUTER_API_KEY,
+    )
+)
 
 CONFIG = SimpleNamespace(
     **{
         "TEMP": 0.0,
-        "MODEL": "gpt-4o",
+        "MODEL": settings.MODEL_ID,
     }
 )
 
@@ -94,7 +99,6 @@ def get_code_for_insight(
 
 def inspect_data():
     existing_insights = TrainingInsight.objects.all()
-    insights_list = [insight.__dict__ for insight in existing_insights]
     breakpoint()
 
     for i in existing_insights:
