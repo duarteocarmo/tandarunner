@@ -1,13 +1,12 @@
 import json
 import logging
 import uuid
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.core.cache import cache
 from django.template.loader import render_to_string
-from litellm import stream_chunk_builder
 
 from tandarunner.chat import (
     generate_recommendation_prompt,
@@ -19,13 +18,13 @@ logger = logging.getLogger(__name__)
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.messages: List[Dict[str, str]] = []
+        self.messages: list[dict[str, str]] = []
         self.user = self.scope["user"]
         self.session = await sync_to_async(self.scope["session"].load)()
         await super().connect()
         await self.send_first_message()
 
-    async def receive(self, text_data: str):
+    async def receive(self, text_data: str = None, bytes_data: str = None):  # type: ignore[override]
         print(f"{self.messages=}")
         text_data_json = json.loads(text_data)
         logger.info(f"Received: {text_data_json}")
@@ -67,28 +66,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def generate_ai_response(self):
         response = await generate_response_to(self.messages)
-        chunks = []
+        full_text = ""
         async for chunk in response:
-            await self.send_chunk(chunk)
-            chunks.append(chunk)
+            text = chunk.choices[0].delta.content or ""
+            full_text += text
+            escaped = text.replace("\n", "<br>")
+            await self.send(
+                text_data=f"""<div id='{self.message_id}' hx-swap-oob="beforeend">{escaped}</div>"""
+            )
 
-        final_message = self.get_final_message(chunks)
-        await self.send_final_message(final_message)
-        self.messages.append({"content": final_message, "role": "system"})
-
-    async def send_chunk(self, chunk: Any):
-        text = chunk.choices[0].delta.content or ""
-        text = text.replace("\n", "<br>")
-        await self.send(
-            text_data=f"""<div id='{self.message_id}' hx-swap-oob="beforeend">{text}</div>"""
-        )
-
-    def get_final_message(self, chunks: List[Any]) -> str:
-        return (
-            stream_chunk_builder(chunks, messages=self.messages)
-            .choices[0]
-            .message.content
-        )
+        await self.send_final_message(full_text)
+        self.messages.append({"content": full_text, "role": "system"})
 
     async def send_final_message(self, final_message: str):
         await self.send_html(

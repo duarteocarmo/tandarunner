@@ -1,5 +1,4 @@
 from fastapi.testclient import TestClient
-
 from tandarunner.api.main import app
 
 client = TestClient(app)

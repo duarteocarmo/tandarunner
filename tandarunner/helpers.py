@@ -43,7 +43,7 @@ def refresh_token(access_token):
 
 def get_athlete(access_token) -> dict:
     url = f"{settings.STRAVA_BASE_URL}/athlete"
-    headers = {"Authorization": f"Bearer {access_token}"}
+    headers = {"Authorization": f"Bearer {access_token.token}"}
     response = requests.get(url, headers=headers)
 
     if response.status_code != 200:

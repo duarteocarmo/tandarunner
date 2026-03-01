@@ -1,6 +1,7 @@
 import logging
 import os
 import pickle
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 
 import altair as alt
@@ -13,6 +14,7 @@ from django.core.cache import cache
 logger = logging.getLogger(__name__)
 
 DAYS_BACK = 180
+TOTAL_DAYS_BACK = 1095  # 3 years
 
 
 def get_athlete(access_token) -> dict:
@@ -90,37 +92,73 @@ def pace_tick_formatter(value):
     return f"{minutes}:{seconds:02d}"
 
 
-def fetch_activities(access_token: str) -> list:
+def _fetch_activity_chunk(access_token: str, after: int, before: int) -> list:
     url = f"{settings.STRAVA_BASE_URL}/athlete/activities"
     headers = {"Authorization": f"Bearer {access_token}"}
-    after_timestamp = int(
-        (datetime.now() - timedelta(days=DAYS_BACK)).timestamp()
-    )
-
     per_page = 200
     page = 1
-    all_activities = []
+    activities = []
 
     while True:
-        params = {"after": after_timestamp, "page": page, "per_page": per_page}
+        params = {
+            "after": after,
+            "before": before,
+            "page": page,
+            "per_page": per_page,
+        }
         response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()  # This will raise an HTTPError if the HTTP request returned an unsuccessful status code
-        activities = response.json()
+        response.raise_for_status()
+        batch = response.json()
 
-        if not activities:
+        if not batch:
             break
 
-        all_activities.extend(activities)
-        if len(activities) < per_page:
+        activities.extend(batch)
+        if len(batch) < per_page:
             break
 
         page += 1
 
+    return activities
+
+
+def fetch_all_activities(access_token: str) -> list:
+    cache_id = f"activities-{access_token}"
+    cached = cache.get(cache_id)
+    if cached is not None:
+        logger.info("Found activities in cache.")
+        return cached
+
+    now = datetime.now()
+    chunks = []
+    for i in range(3):
+        start = int((now - timedelta(days=365 * (i + 1))).timestamp())
+        end = int((now - timedelta(days=365 * i)).timestamp())
+        chunks.append((start, end))
+
+    all_activities = []
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = [
+            executor.submit(_fetch_activity_chunk, access_token, after, before)
+            for after, before in chunks
+        ]
+        for future in as_completed(futures):
+            all_activities.extend(future.result())
+
+    cache.set(cache_id, all_activities)
+    logger.info(f"Fetched {len(all_activities)} activities in parallel.")
     return all_activities
 
 
 def prepare_data(access_token: str) -> tuple:
-    activities = fetch_activities(access_token)
+    all_activities = fetch_all_activities(access_token)
+    cutoff = datetime.now() - timedelta(days=DAYS_BACK)
+    activities = [
+        act
+        for act in all_activities
+        if datetime.fromisoformat(act["start_date"].replace("Z", "+00:00"))
+        >= cutoff.astimezone()
+    ]
 
     running_activities = [act for act in activities if act["type"] == "Run"]
 
@@ -196,11 +234,11 @@ def prepare_data(access_token: str) -> tuple:
     daily_df["date_factor"] = numpy.exp(numpy.linspace(0, 15, len(daily_df)))
 
     daily_df["daily_pace_pretty"] = daily_df["pace_sec_per_km"].apply(
-        lambda x: f"{int(x//60)}:{int(x%60):02d}"
+        lambda x: f"{int(x // 60)}:{int(x % 60):02d}"
     )
     daily_df["rolling_pace_pretty"] = daily_df[
         "rolling_pace_sec_per_km"
-    ].apply(lambda x: f"{int(x//60)}:{int(x%60):02d}")
+    ].apply(lambda x: f"{int(x // 60)}:{int(x % 60):02d}")
 
     daily_df["rolling_km_per_week_daily_distance"] = (
         daily_df["rolling_km_per_week"] / 7
@@ -328,24 +366,28 @@ def viz_rolling_tanda(daily_df: pandas.DataFrame) -> dict:
 
 
 def running_heatmap(daily_df: pandas.DataFrame) -> dict:
-    daily_df["week_number"] = daily_df.index.isocalendar().week
     daily_df["day_of_the_week_name"] = daily_df.index.strftime("%a")
     heatmap_data = daily_df[
         [
-            "week_number",
             "day_of_the_week_name",
             "distance_km",
         ]
-    ].sort_values(["week_number"])
+    ].copy()
 
     all_days = pandas.date_range(
         heatmap_data.index.min(), heatmap_data.index.max(), freq="D"
     )
     heatmap_data = heatmap_data.reindex(all_days).fillna(0.0)
-    heatmap_data["week_number"] = heatmap_data.index.isocalendar().week
     heatmap_data["day_of_the_week_name"] = heatmap_data.index.strftime("%a")
+    heatmap_data["week_start"] = heatmap_data.index - pandas.to_timedelta(
+        heatmap_data.index.weekday, unit="D"
+    )
+    heatmap_data["week_label"] = heatmap_data["week_start"].dt.strftime(
+        "%Y-W%W"
+    )
     heatmap_data["month"] = heatmap_data.index.strftime("%b")
     heatmap_data["day_of_the_month"] = heatmap_data.index.day
+    heatmap_data["ran"] = heatmap_data["distance_km"] > 0
 
     upper_limit = (
         heatmap_data["distance_km"].mean()
@@ -354,12 +396,38 @@ def running_heatmap(daily_df: pandas.DataFrame) -> dict:
 
     day_order = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-    heatmap = (
-        alt.Chart(heatmap_data)
+    rest_days = (
+        alt.Chart(heatmap_data[~heatmap_data["ran"]])
+        .mark_rect(cornerRadius=2, color="#e0e0e0")
+        .encode(
+            x=alt.X(
+                "week_label:O",
+                axis=alt.Axis(
+                    title=None, domain=False, ticks=False, labels=False
+                ),
+            ),
+            y=alt.Y(
+                "day_of_the_week_name:O",
+                sort=day_order,
+                axis=alt.Axis(
+                    title=None,
+                    domain=False,
+                    ticks=False,
+                ),
+            ),
+            tooltip=[
+                alt.Tooltip("month:O", title="Month"),
+                alt.Tooltip("day_of_the_month:O", title="Day of the month"),
+            ],
+        )
+    )
+
+    run_days = (
+        alt.Chart(heatmap_data[heatmap_data["ran"]])
         .mark_rect(cornerRadius=2)
         .encode(
             x=alt.X(
-                "week_number:O",
+                "week_label:O",
                 axis=alt.Axis(
                     title=None, domain=False, ticks=False, labels=False
                 ),
@@ -389,6 +457,10 @@ def running_heatmap(daily_df: pandas.DataFrame) -> dict:
                 alt.Tooltip("day_of_the_month:O", title="Day of the month"),
             ],
         )
+    )
+
+    heatmap = (
+        (rest_days + run_days)
         .configure_scale(bandPaddingInner=0.20)
         .configure_view(stroke=None)
     )
@@ -656,12 +728,86 @@ def marathon_predictor(daily_df: pandas.DataFrame) -> dict:
     ).to_json()
 
 
+def viz_cumulative_yearly_distance(all_activities: list) -> str:
+    running = [act for act in all_activities if act["type"] == "Run"]
+
+    data = {
+        "date": [act["start_date"] for act in running],
+        "distance_km": [float(act["distance"]) / 1000 for act in running],
+    }
+
+    df = pandas.DataFrame(data)
+    df["date"] = pandas.to_datetime(df["date"])
+    df["year"] = df["date"].dt.year
+    df["day_of_year"] = df["date"].dt.dayofyear
+
+    daily = (
+        df.groupby(["year", "day_of_year"])["distance_km"].sum().reset_index()
+    )
+    daily = daily.sort_values(["year", "day_of_year"])
+    daily["cumulative_km"] = daily.groupby("year")["distance_km"].cumsum()
+    daily["year_str"] = daily["year"].astype(str)
+
+    current_year = datetime.now().year
+    current = daily[daily["year"] == current_year]
+    past = daily[daily["year"] != current_year]
+
+    past_lines = (
+        alt.Chart(past)
+        .mark_line(strokeDash=[4, 4], opacity=0.7)
+        .encode(
+            x=alt.X(
+                "day_of_year:Q",
+                title="Day of year",
+                scale=alt.Scale(domain=[1, 365]),
+            ),
+            y=alt.Y("cumulative_km:Q", title="Cumulative km"),
+            color=alt.Color("year_str:N", title="Year"),
+            tooltip=[
+                alt.Tooltip("year_str:N", title="Year"),
+                alt.Tooltip("day_of_year:Q", title="Day"),
+                alt.Tooltip("cumulative_km:Q", title="Km", format=".0f"),
+            ],
+        )
+    )
+
+    current_line = (
+        alt.Chart(current)
+        .mark_line(strokeWidth=3)
+        .encode(
+            x=alt.X(
+                "day_of_year:Q",
+                title="Day of year",
+                scale=alt.Scale(domain=[1, 365]),
+            ),
+            y=alt.Y("cumulative_km:Q", title="Cumulative km"),
+            color=alt.Color("year_str:N", title="Year"),
+            tooltip=[
+                alt.Tooltip("year_str:N", title="Year"),
+                alt.Tooltip("day_of_year:Q", title="Day"),
+                alt.Tooltip("cumulative_km:Q", title="Km", format=".0f"),
+            ],
+        )
+    )
+
+    return (
+        (past_lines + current_line)
+        .properties(
+            width="container",
+            height=400,
+            title="Cumulative Yearly Distance",
+        )
+        .configure_legend(orient="top")
+    ).to_json()
+
+
 def get_visualizations(access_token: str, athlete_id: int) -> dict:
     cache_id = f"viz-{access_token}"
     if cache_id in cache:
         logger.info("Found viz data in cache.")
         return cache.get(cache_id)
 
+    all_activities = fetch_all_activities(access_token)
     weekly_data, daily_df, running_activities = prepare_data(access_token)
     logger.info("Prepared data.")
 
@@ -670,6 +816,7 @@ def get_visualizations(access_token: str, athlete_id: int) -> dict:
         "rolling_tanda": viz_rolling_tanda(daily_df=daily_df),
         "marathon_predictor": marathon_predictor(daily_df=daily_df),
         "running_heatmap": running_heatmap(daily_df=daily_df),
+        "cumulative_yearly": viz_cumulative_yearly_distance(all_activities),
         "running_activities": clean_df(running_activities).to_json(),
     }
 

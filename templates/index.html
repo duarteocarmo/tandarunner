@@ -45,7 +45,7 @@
                                                 {% if user.is_authenticated %}
                                                         <p>Welcome, {{ user.username|title }}!</p>
                                                         <code>
-                                                                You have run {{ stats.pretty_total_kms|floatformat:"0" }} km this year. (That's {{ stats.pretty_total_time }} of running!)
+                                                                You have run {{ stats.pretty_total_kms|floatformat:"0" }} km this year. That's the equivalent of running non-stop for {{ stats.pretty_total_time }}!
                                                         </code>
                                                 {% else %}
                                                         <p>
@@ -77,6 +77,7 @@
                                                 <div class="chart" id="running_heatmap">Visualization 2</div>
                                                 <div class="chart" id="rolling_tanda">Visualization 4</div>
                                                 <div class="chart" id="marathon_predictor">Visualization 3</div>
+                                                <div class="chart" id="cumulative_yearly">Visualization 5</div>
                                         </div>
                                 </main>
                                 <aside class="sidebar">
