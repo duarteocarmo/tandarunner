@@ -68,7 +68,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         response = await generate_response_to(self.messages)
         full_text = ""
         async for chunk in response:
-            text = chunk.choices[0].delta.content or ""
+            if not chunk.choices or not chunk.choices[0].delta.content:
+                continue
+            text = chunk.choices[0].delta.content
             full_text += text
             escaped = text.replace("\n", "<br>")
             await self.send(
