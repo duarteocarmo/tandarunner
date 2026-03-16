@@ -53,7 +53,7 @@ invalid-method-override = "warn"
 invalid-return-type = "warn"
 
 [tool.deptry]
-extend_exclude = ["notebooks", "research"]
+extend_exclude = ["notebooks", "research", "scripts"]
 
 [tool.deptry.per_rule_ignores]
 DEP002 = ["whitenoise", "daphne", "django-debug-toolbar", "django-extensions", "Twisted", "diskcache"]
