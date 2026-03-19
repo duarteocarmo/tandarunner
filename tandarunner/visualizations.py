@@ -772,7 +772,11 @@ def viz_cumulative_yearly_distance(all_activities: list) -> str:
                 title="Day of year",
                 scale=alt.Scale(domain=[1, 365]),
             ),
-            y=alt.Y("cumulative_km:Q", title="Cumulative km"),
+            y=alt.Y(
+                "cumulative_km:Q",
+                title="Cumulative km",
+                axis=alt.Axis(tickCount=5),
+            ),
             color=alt.Color("year_str:N", title="Year"),
             tooltip=[
                 alt.Tooltip("year_str:N", title="Year"),
@@ -791,7 +795,11 @@ def viz_cumulative_yearly_distance(all_activities: list) -> str:
                 title="Day of year",
                 scale=alt.Scale(domain=[1, 365]),
             ),
-            y=alt.Y("cumulative_km:Q", title="Cumulative km"),
+            y=alt.Y(
+                "cumulative_km:Q",
+                title="Cumulative km",
+                axis=alt.Axis(tickCount=5),
+            ),
             color=alt.Color("year_str:N", title="Year"),
             tooltip=[
                 alt.Tooltip("year_str:N", title="Year"),
@@ -805,7 +813,7 @@ def viz_cumulative_yearly_distance(all_activities: list) -> str:
         (past_lines + current_line)
         .properties(
             width="container",
-            height=400,
+            height=250,
             title="Cumulative Yearly Distance",
         )
         .configure_legend(orient="top")
