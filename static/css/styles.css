@@ -77,6 +77,16 @@ button {
   padding: 10px;
 }
 
+.loading {
+  height: 80vh;
+  border-radius: 5px;
+  border: 0.5px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.4;
+}
+
 .visualization {
   padding: 10px;
   border-radius: 5px;

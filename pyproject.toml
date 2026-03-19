@@ -14,13 +14,10 @@ dependencies = [
   "channels[daphne]",
   "django-debug-toolbar",
   "openai",
-  "pydantic",
   "markdown",
   "Twisted[tls,http2]",
-  "instructor",
   "diskcache",
   "django-extensions",
-  "youtube-transcript-api",
 ]
 
 [dependency-groups]
