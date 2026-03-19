@@ -128,3 +128,4 @@ dmypy.json
 .DS_Store
 react_bot.py
 staticfiles
+.envrc
