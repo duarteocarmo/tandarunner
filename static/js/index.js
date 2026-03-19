@@ -1,43 +1,42 @@
-// add visualizations for graphs
-document.addEventListener("DOMContentLoaded", function () {
-  const visualizations = JSON.parse(
-    document.getElementById("visualizations").textContent
-  );
+// tab switching
+function setActiveTab(el) {
+  document
+    .querySelectorAll(".tab")
+    .forEach((t) => t.classList.remove("active"));
+  el.classList.add("active");
+}
 
-  function getVegaTheme() {
-    return window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "default";
-  }
+// vega chart rendering with theme support
+function getVegaTheme() {
+  return window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "default";
+}
 
-  function applyVegaTheme() {
-    const vega_theme = getVegaTheme();
-    Object.keys(visualizations).forEach(function (key) {
-      const spec = JSON.parse(visualizations[key]);
-      vegaEmbed("#" + key, spec, {
-        renderer: "svg",
-        actions: false,
-        theme: vega_theme,
-      });
+function renderVegaCharts() {
+  const el = document.getElementById("visualizations");
+  if (!el) return;
+
+  const visualizations = JSON.parse(el.textContent);
+  const vega_theme = getVegaTheme();
+  Object.keys(visualizations).forEach(function (key) {
+    const spec = JSON.parse(visualizations[key]);
+    vegaEmbed("#" + key, spec, {
+      renderer: "svg",
+      actions: false,
+      theme: vega_theme,
     });
-  }
-
-  applyVegaTheme();
-
-  window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", applyVegaTheme);
-});
-
-// adjust text box height based on content
-document.addEventListener("DOMContentLoaded", () => {
-  const textareaEle = document.getElementById("messageinput");
-  textareaEle.addEventListener("input", () => {
-    textareaEle.style.height = "auto";
-    textareaEle.style.height = `${textareaEle.scrollHeight}px`;
   });
+}
+
+document.addEventListener("htmx:afterSettle", function (event) {
+  renderVegaCharts();
 });
+
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", renderVegaCharts);
 
 // after sending message, clear input box and reset height
 document.addEventListener("htmx:wsAfterSend", function () {
@@ -57,15 +56,19 @@ const state = {
   generating: false,
 };
 document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("stopMessage").addEventListener("click", function () {
-    if (state.generating) {
+  document.addEventListener("click", function (event) {
+    if (event.target.id === "stopMessage" && state.generating) {
       state.allowSwaps = false;
+    }
+    if (event.target.id === "resetChat") {
+      state.allowSwaps = true;
+      state.generating = false;
     }
   });
 });
 document.addEventListener("htmx:oobBeforeSwap", function (event) {
-  var numMessages = document.getElementById("message-list").childElementCount;
-  if (numMessages == 0) {
+  var messageList = document.getElementById("message-list");
+  if (!messageList || messageList.childElementCount == 0) {
     return;
   }
 

@@ -27,8 +27,8 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  width: 85%;
-  max-width: 1280px;
+  width: 75%;
+  max-width: 960px;
   overflow: hidden;
   /* margin-top: 3px; */
   /* margin-bottom: 3px; */
@@ -44,17 +44,47 @@ button {
 
 .header {
   text-align: left;
-  padding: 10px 20px;
+  padding: 10px 0;
 }
 
-.main-content-container {
+.tab-bar {
   display: flex;
-  flex-direction: row;
+  gap: 16px;
+  padding: 0;
 }
 
-.main-content {
-  width: 70%;
-  padding: 10px;
+.tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 0;
+  cursor: pointer;
+  font-size: 1em;
+  font-family: system-ui;
+  opacity: 0.6;
+}
+
+.tab.active {
+  border-bottom: 2px solid currentColor;
+  opacity: 1;
+}
+
+.tab:hover {
+  opacity: 1;
+}
+
+#tab-content {
+  padding: 10px 0;
+}
+
+.loading {
+  height: 80vh;
+  border-radius: 5px;
+  border: 0.5px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.4;
 }
 
 .visualization {
@@ -69,9 +99,26 @@ button {
   width: 100%;
 }
 
-.sidebar {
-  width: 40%;
-  padding: 10px;
+.stats-section {
+  display: flex;
+  gap: 32px;
+  padding: 10px 0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 0.85em;
+  opacity: 0.6;
+}
+
+.stat-value {
+  font-size: 1.4em;
+  font-weight: 600;
 }
 
 .chat-box {
@@ -126,15 +173,9 @@ button {
 }
 
 @media (max-width: 768px) {
-  .main-content-container {
-    flex-direction: column;
+  .container {
     width: 100%;
-    margin: 0;
-  }
-
-  .main-content,
-  .sidebar {
-    width: 100%;
+    padding: 0 15px;
   }
 
   .visualization {
@@ -145,8 +186,9 @@ button {
     max-height: calc(60vh);
   }
 
-  .container {
-    width: 100%;
+  .stats-section {
+    flex-wrap: wrap;
+    gap: 16px;
   }
 }
 

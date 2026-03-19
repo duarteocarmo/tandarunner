@@ -13,14 +13,11 @@ dependencies = [
   "whitenoise",
   "channels[daphne]",
   "django-debug-toolbar",
-  "openai",
-  "pydantic",
   "markdown",
   "Twisted[tls,http2]",
-  "instructor",
   "diskcache",
   "django-extensions",
-  "youtube-transcript-api",
+  "pydantic-ai-slim[openrouter]>=1.70.0",
 ]
 
 [dependency-groups]
@@ -32,6 +29,7 @@ dev = [
   "jupyter-black",
   "ty",
   "deptry",
+  "djlint>=1.36.4",
 ]
 
 [tool.ruff]
@@ -53,7 +51,7 @@ invalid-method-override = "warn"
 invalid-return-type = "warn"
 
 [tool.deptry]
-extend_exclude = ["notebooks", "research"]
+extend_exclude = ["notebooks", "research", "scripts"]
 
 [tool.deptry.per_rule_ignores]
 DEP002 = ["whitenoise", "daphne", "django-debug-toolbar", "django-extensions", "Twisted", "diskcache"]

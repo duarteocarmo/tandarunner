@@ -1,0 +1,31 @@
+<div class="chat-box" hx-ext="ws" ws-connect="/ws/chat/">
+        <div class="chat-messages" id="message-list"></div>
+        <form id="form"
+              ws-send
+              hx-trigger="keyup[key=='Enter'&&!shiftKey], click from:#sendMessage, click from:#resetChat">
+                <div>
+                        <textarea name="message"
+                                  placeholder="Say something..."
+                                  rows="3"
+                                  class="textarea"
+                                  hx-trigger="keyup[key=='Enter'&&!shiftKey]"
+                                  id="messageinput"></textarea>
+                </div>
+                <div class="right">
+                        <button type="submit" id="sendMessage">Send</button>
+                        <button type="button" id="stopMessage">Stop</button>
+                        <button type="button" name="reset" id="resetChat">Reset</button>
+                </div>
+        </form>
+</div>
+<script>
+(function() {
+        const textareaEle = document.getElementById("messageinput");
+        textareaEle.addEventListener("input", () => {
+                textareaEle.style.height = "auto";
+                textareaEle.style.height = textareaEle.scrollHeight + "px";
+        });
+
+        htmx.process(document.querySelector(".chat-box"));
+})();
+</script>

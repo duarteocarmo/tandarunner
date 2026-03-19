@@ -1,4 +1,4 @@
-.PHONY: install format check lint test app clean docker help
+.PHONY: install format check lint test run migrations clean docker help
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -22,7 +22,10 @@ lint: check ## Alias for check
 test: ## Run tests
 	@uv run pytest --cov=src --cov-report xml --log-level=WARNING --disable-pytest-warnings
 
-app: ## Run the Django dev server
+migrations: ## Create new database migrations
+	@uv run python manage.py makemigrations
+
+run: ## Run the Django dev server
 	@uv run python manage.py migrate --noinput
 	@uv run python manage.py collectstatic --noinput
 	@uv run python manage.py runserver

@@ -1,0 +1,3 @@
+- To visually test frontend changes with CDP against the Helium browser: edit the template, reload with `CDP_PORT_FILE=~/Library/Application\ Support/net.imput.helium/DevToolsActivePort /Users/duarteocarmo/.agents/skills/chrome-cdp/scripts/cdp.mjs nav <target> http://localhost:8000/`, then verify with `eval` and `shot` using the same CDP_PORT_FILE prefix (use `list` to find the target ID for the localhost:8000 tab).
+- If you take screenshots, clean up after yourself after
+- When done changing things. Run make format and make lint

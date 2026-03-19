@@ -27,9 +27,11 @@ SECRET_KEY = (
 
 DEBUG = os.getenv("DEBUG", "FALSE") == "TRUE"
 DUARTE_ATHLETE_ID = 44717295
-MODEL_ID = "openai/gpt-oss-120b:nitro"
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
-OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+AGENT_CONFIG = {
+    "model": "openrouter:mistralai/mistral-small-2603",
+    "temperature": 0.0,
+}
 
 ALLOWED_HOSTS = ["*"]
 INTERNAL_IPS = [
@@ -208,7 +210,7 @@ if not DEBUG:
 else:
     CACHES = {
         "default": {
-            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         }
     }
 
