@@ -128,3 +128,5 @@ dmypy.json
 .DS_Store
 react_bot.py
 staticfiles
+.envrc
+strava_dump.parquet
