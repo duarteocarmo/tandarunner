@@ -22,8 +22,7 @@ def index(request: HttpRequest) -> HttpResponse:
     if user.is_authenticated:
         access_token = get_access_token(user)
         athlete = get_athlete(access_token)
-        stats = get_stats(access_token.token, athlete["id"])
-        data = {"athlete": athlete, "stats": stats}
+        data = {"athlete": athlete}
 
     return TemplateResponse(request, "index.html", data)
 
@@ -41,14 +40,32 @@ def graphs_partial(request: HttpRequest) -> HttpResponse:
 
         athlete = get_athlete(access_token)
         athlete_id = athlete["id"]
-        visualizations = get_visualizations(access_token.token, athlete_id)
-        running_activities = visualizations.pop("running_activities")
+        results = get_visualizations(access_token.token, athlete_id)
+        stats = get_stats(access_token.token, athlete_id)
         logger.info("Got athlete data.")
 
-        data = {"visualizations": visualizations}
+        chart_keys = {
+            "weekly_chart",
+            "rolling_tanda",
+            "marathon_predictor",
+            "running_heatmap",
+            "cumulative_yearly",
+        }
+        data = {
+            "visualizations": {
+                k: v for k, v in results.items() if k in chart_keys
+            },
+            "current_tanda": results["current_tanda"],
+            "current_tanda_pace": results["current_tanda_pace"],
+            "avg_hr_per_km": results["avg_hr_per_km"],
+            "stats": stats,
+        }
 
         request.session.update(
-            {"athlete": athlete, "running_activities": running_activities}
+            {
+                "athlete": athlete,
+                "running_activities": results["running_activities"],
+            }
         )
         logger.info("Prepared graph data.")
 

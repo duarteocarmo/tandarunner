@@ -3,6 +3,7 @@ import os
 import pickle
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
+from typing import Any, TypedDict
 
 import altair as alt
 import numpy
@@ -12,6 +13,19 @@ from django.conf import settings
 from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
+
+
+class VisualizationResults(TypedDict):
+    weekly_chart: Any
+    rolling_tanda: Any
+    marathon_predictor: Any
+    running_heatmap: Any
+    cumulative_yearly: Any
+    running_activities: Any
+    current_tanda: str
+    current_tanda_pace: str
+    avg_hr_per_km: str
+
 
 DAYS_BACK = 180
 TOTAL_DAYS_BACK = 1095  # 3 years
@@ -42,9 +56,7 @@ def get_stats(
     logger.info("Got athlete stats.")
     ytd_total_meters = stats["ytd_run_totals"]["distance"]
     stats["pretty_total_kms"] = ytd_total_meters / 1000
-
-    ytd_total_days = stats["ytd_run_totals"]["moving_time"] / 3600 / 24
-    stats["pretty_total_time"] = f"{ytd_total_days:.2f} days"
+    stats["total_runs"] = stats["ytd_run_totals"]["count"]
 
     return stats
 
@@ -82,8 +94,7 @@ def pretty_marathon_time(total_marathon_time_hours: float) -> str:
     seconds = int(((total_marathon_time_hours - hours) * 60 - minutes) * 60)
     if seconds >= 30:
         minutes += 1
-
-    return f"{hours} hours {minutes} minutes"
+    return f"{hours}:{minutes:02d}"
 
 
 def pace_tick_formatter(value):
@@ -801,7 +812,9 @@ def viz_cumulative_yearly_distance(all_activities: list) -> str:
     ).to_json()
 
 
-def get_visualizations(access_token: str, athlete_id: int) -> dict:
+def get_visualizations(
+    access_token: str, athlete_id: int
+) -> VisualizationResults:
     cache_id = f"viz-{access_token}"
     if cache_id in cache:
         logger.info("Found viz data in cache.")
@@ -811,13 +824,39 @@ def get_visualizations(access_token: str, athlete_id: int) -> dict:
     weekly_data, daily_df, running_activities = prepare_data(access_token)
     logger.info("Prepared data.")
 
-    results = {
+    tanda_series = daily_df["rolling_tanda_day"].dropna()
+    if not tanda_series.empty:
+        latest_tanda = tanda_series.iloc[-1]
+        current_tanda = pretty_marathon_time(latest_tanda)
+        pace_secs = latest_tanda * 3600 / 42.195
+        current_tanda_pace = (
+            f"{int(pace_secs // 60)}:{int(pace_secs % 60):02d}/km"
+        )
+    else:
+        current_tanda = "N/A"
+        current_tanda_pace = "N/A"
+
+    hr_data = running_activities[["average_heartrate", "distance"]].dropna()
+    if not hr_data.empty:
+        total_hr_weighted = (
+            hr_data["average_heartrate"] * hr_data["distance"]
+        ).sum()
+        avg_hr_per_km = (
+            f"{total_hr_weighted / hr_data['distance'].sum():.0f} bpm"
+        )
+    else:
+        avg_hr_per_km = "N/A"
+
+    results: VisualizationResults = {
         "weekly_chart": viz_weekly_chart(weekly_data),
         "rolling_tanda": viz_rolling_tanda(daily_df=daily_df),
         "marathon_predictor": marathon_predictor(daily_df=daily_df),
         "running_heatmap": running_heatmap(daily_df=daily_df),
         "cumulative_yearly": viz_cumulative_yearly_distance(all_activities),
         "running_activities": clean_df(running_activities).to_json(),
+        "current_tanda": current_tanda,
+        "current_tanda_pace": current_tanda_pace,
+        "avg_hr_per_km": avg_hr_per_km,
     }
 
     if athlete_id == settings.DUARTE_ATHLETE_ID:
@@ -835,7 +874,7 @@ def get_visualizations(access_token: str, athlete_id: int) -> dict:
     return results
 
 
-def get_dummy_visualizations() -> dict:
+def get_dummy_visualizations() -> VisualizationResults:
     file_path = os.path.join(
         f"{settings.STATICFILES_DIRS[0]}/dummy/", "temp_viz.pkl"
     )

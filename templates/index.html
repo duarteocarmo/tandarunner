@@ -44,9 +44,6 @@
                                                 </p>
                                                 {% if user.is_authenticated %}
                                                         <p>Welcome, {{ user.username|title }}!</p>
-                                                        <code>
-                                                                You have run {{ stats.pretty_total_kms|floatformat:"0" }} km this year. That's the equivalent of running non-stop for {{ stats.pretty_total_time }}!
-                                                        </code>
                                                 {% else %}
                                                         <p>
                                                                 This is <a href="https://duarteocarmo.com" target="_blank">Duarte's</a> dummy data. Hopefully you're running more than him.

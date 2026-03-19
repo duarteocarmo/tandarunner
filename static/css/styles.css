@@ -27,8 +27,8 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  width: 85%;
-  max-width: 1280px;
+  width: 75%;
+  max-width: 960px;
   overflow: hidden;
   /* margin-top: 3px; */
   /* margin-bottom: 3px; */
@@ -44,20 +44,20 @@ button {
 
 .header {
   text-align: left;
-  padding: 10px 20px;
+  padding: 10px 0;
 }
 
 .tab-bar {
   display: flex;
-  gap: 0;
-  padding: 0 10px;
+  gap: 16px;
+  padding: 0;
 }
 
 .tab {
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  padding: 8px 16px;
+  padding: 8px 0;
   cursor: pointer;
   font-size: 1em;
   font-family: system-ui;
@@ -74,7 +74,7 @@ button {
 }
 
 #tab-content {
-  padding: 10px;
+  padding: 10px 0;
 }
 
 .loading {
@@ -97,6 +97,28 @@ button {
 
 .visualization > div {
   width: 100%;
+}
+
+.stats-section {
+  display: flex;
+  gap: 32px;
+  padding: 10px 0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 0.85em;
+  opacity: 0.6;
+}
+
+.stat-value {
+  font-size: 1.4em;
+  font-weight: 600;
 }
 
 .chat-box {
