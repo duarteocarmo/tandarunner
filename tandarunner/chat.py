@@ -5,6 +5,9 @@ from pydantic_ai import Agent
 
 logger = logging.getLogger(__name__)
 
+if settings.OPENROUTER_API_KEY is None:
+    raise ValueError("OPENROUTER_API_KEY is not set")
+
 SYSTEM_PROMPT = (
     "You are a knowledgeable and friendly running coach. "
     "You help runners improve their training, understand their data, and prepare for races. "
