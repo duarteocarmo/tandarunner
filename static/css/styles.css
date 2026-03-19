@@ -61,6 +61,8 @@ button {
   cursor: pointer;
   font-size: 1em;
   font-family: system-ui;
+  color: inherit;
+  -webkit-appearance: none;
   opacity: 0.6;
 }
 
