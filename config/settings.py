@@ -27,7 +27,7 @@ SECRET_KEY = (
 
 DEBUG = os.getenv("DEBUG", "FALSE") == "TRUE"
 DUARTE_ATHLETE_ID = 44717295
-MODEL_ID = "openai/gpt-oss-120b:nitro"
+MODEL_ID = "openai/gpt-5.4-nano"
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
@@ -208,7 +208,7 @@ if not DEBUG:
 else:
     CACHES = {
         "default": {
-            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         }
     }
 

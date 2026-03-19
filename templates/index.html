@@ -68,46 +68,21 @@
                                                 </form>
                                         {% endif %}
                                 </div>
-                                {{ visualizations|json_script:"visualizations" }}
-                        </header>
-                        <div class="main-content-container">
-                                <main class="main-content">
-                                        <div class="visualization">
-                                                <div class="chart" id="weekly_chart">Visualization 1</div>
-                                                <div class="chart" id="running_heatmap">Visualization 2</div>
-                                                <div class="chart" id="rolling_tanda">Visualization 4</div>
-                                                <div class="chart" id="marathon_predictor">Visualization 3</div>
-                                                <div class="chart" id="cumulative_yearly">Visualization 5</div>
-                                        </div>
-                                </main>
-                                <aside class="sidebar">
-                                        <div class="chat-box" hx-ext="ws" ws-connect="/ws/chat/">
-                                                <div class="chat-messages" id="message-list">
-                                                        <!-- <div class="chat-message"> -->
-                                                        <!--     <img src="{% static 'icons/robot-face.png' %}" class="logo"> -->
-                                                        <!--     <p>Hi! I'm your Tanda Assistant, here to help you with any questions about your training!</p> -->
-                                                        <!-- </div> -->
-                                                </div>
-                                                <form id="form"
-                                                      ws-send
-                                                      hx-trigger="keyup[key=='Enter'&&!shiftKey], click from:#sendMessage, click from:#resetChat">
-                                                        <div>
-                                                                <textarea name="message"
-                                                                          placeholder="Say something..."
-                                                                          rows="3"
-                                                                          class="textarea"
-                                                                          hx-trigger="keyup[key=='Enter'&&!shiftKey]"
-                                                                          id="messageinput"></textarea>
-                                                        </div>
-                                                        <div class="right">
-                                                                <button type="submit" id="sendMessage">Send</button>
-                                                                <button type="button" id="stopMessage">Stop</button>
-                                                                <button type="button" name="reset" id="resetChat">Reset</button>
-                                                        </div>
-                                                </form>
-                                        </div>
-                                </aside>
+                                </header>
+                        <div class="tab-bar">
+                                <button class="tab active"
+                                        hx-get="{% url 'graphs_partial' %}"
+                                        hx-target="#tab-content"
+                                        hx-trigger="load, click"
+                                        hx-swap="innerHTML"
+                                        hx-on::after-request="setActiveTab(this)">Graphs</button>
+                                <button class="tab"
+                                        hx-get="{% url 'chat_partial' %}"
+                                        hx-target="#tab-content"
+                                        hx-swap="innerHTML"
+                                        hx-on::after-request="setActiveTab(this)">Chat</button>
                         </div>
+                        <div id="tab-content"></div>
                 </div>
         </body>
 </html>
