@@ -2,6 +2,9 @@ import logging
 
 from django.conf import settings
 from pydantic_ai import Agent
+from pydantic_ai.models.openrouter import (
+    OpenRouterModelSettings,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +20,9 @@ SYSTEM_PROMPT = (
 )
 
 agent = Agent(
-    f"openrouter:{settings.MODEL_ID}",
+    model=settings.AGENT_CONFIG["model"],
     system_prompt=SYSTEM_PROMPT,
+    model_settings=OpenRouterModelSettings(
+        temperature=settings.AGENT_CONFIG["temperature"],
+    ),
 )

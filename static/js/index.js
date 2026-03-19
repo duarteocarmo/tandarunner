@@ -1,8 +1,42 @@
 // tab switching
 function setActiveTab(el) {
-  document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+  document
+    .querySelectorAll(".tab")
+    .forEach((t) => t.classList.remove("active"));
   el.classList.add("active");
 }
+
+// vega chart rendering with theme support
+function getVegaTheme() {
+  return window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "default";
+}
+
+function renderVegaCharts() {
+  const el = document.getElementById("visualizations");
+  if (!el) return;
+
+  const visualizations = JSON.parse(el.textContent);
+  const vega_theme = getVegaTheme();
+  Object.keys(visualizations).forEach(function (key) {
+    const spec = JSON.parse(visualizations[key]);
+    vegaEmbed("#" + key, spec, {
+      renderer: "svg",
+      actions: false,
+      theme: vega_theme,
+    });
+  });
+}
+
+document.addEventListener("htmx:afterSettle", function (event) {
+  renderVegaCharts();
+});
+
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", renderVegaCharts);
 
 // after sending message, clear input box and reset height
 document.addEventListener("htmx:wsAfterSend", function () {

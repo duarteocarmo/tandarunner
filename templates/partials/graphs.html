@@ -26,24 +26,4 @@
         <div class="chart" id="marathon_predictor"></div>
         <div class="chart" id="cumulative_yearly"></div>
 </div>
-<script>
-(function() {
-        const visualizations = JSON.parse(document.getElementById("visualizations").textContent);
 
-        function getVegaTheme() {
-                return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default";
-        }
-
-        function applyVegaTheme() {
-                const vega_theme = getVegaTheme();
-                Object.keys(visualizations).forEach(function(key) {
-                        const spec = JSON.parse(visualizations[key]);
-                        vegaEmbed("#" + key, spec, { renderer: "svg", actions: false, theme: vega_theme });
-                });
-        }
-
-        applyVegaTheme();
-
-        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyVegaTheme);
-})();
-</script>

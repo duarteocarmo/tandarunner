@@ -29,6 +29,7 @@ dev = [
   "jupyter-black",
   "ty",
   "deptry",
+  "djlint>=1.36.4",
 ]
 
 [tool.ruff]

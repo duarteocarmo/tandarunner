@@ -1,87 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-        {% load static %}
-        {% load socialaccount %}
-        {% load markdown_extras %}
-        <head>
-                <meta charset="UTF-8">
-                <meta name="viewport"
-                      content="width=device-width, height=device-height, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
-                <meta name="color-scheme" content="light dark" />
-                <title>Tanda Runner</title>
-                <link rel="icon" href="data:image/svg+xml,
-                        <svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22>
-                                <text y=%22.9em%22 font-size=%2290%22>🎽</text>
-                        </svg>
-                        ">
-                        {% load cache %}
-                        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-                        <script src="{% static 'js/index.js' %}"></script>
-                        <script src="https://cdn.jsdelivr.net/npm/vega@5.28.0"></script>
-                        <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.18.1"></script>
-                        <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.25.0"></script>
-                        <script src="https://unpkg.com/htmx.org@1.9.12"
-                                integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
-                                crossorigin="anonymous"></script>
-                        <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
-                        <script defer
-                                data-domain="tandarunner.duarteocarmo.com"
-                                src="https://plausible.io/js/script.js"></script>
-                        {% cache 600 header %}
-                {% endcache %}
-        </head>
-        <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-                <div class="container">
-                        <header class="header">
-                                <div style="display: flex;
-                                            justify-content: space-between;
-                                            align-items: flex-start">
-                                        <div>
-                                                <h1>Tanda Runner 🎽</h1>
-                                                <p>
-                                                        Designed to help you prepare your next big race. It's greatly inspired by <a href="https://scholar.google.co.uk/citations?view_op=view_citation&hl=en&user=C__krSUAAAAJ&cstart=20&pagesize=80&citation_for_view=C__krSUAAAAJ:j3f4tGmQtD8C"
+    {% load static %}
+    {% load socialaccount %}
+    {% load markdown_extras %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, height=device-height, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta name="color-scheme" content="light dark" />
+        <title>Tanda Runner</title>
+        <link rel="icon"
+              href="data:image/svg+xml, <svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22> <text y=%22.9em%22 font-size=%2290%22>🎽</text> </svg> ">
+            {% load cache %}
+            <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+            <script src="{% static 'js/index.js' %}"></script>
+            <script src="https://cdn.jsdelivr.net/npm/vega@5.28.0"></script>
+            <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.18.1"></script>
+            <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.25.0"></script>
+            <script src="https://unpkg.com/htmx.org@1.9.12"
+                    integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+                    crossorigin="anonymous"></script>
+            <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
+            <script defer
+                    src="https://umami.duarteocarmo.com/script.js"
+                    data-website-id="8e3f0251-eaa5-4642-b654-b3826af8d2c4"></script>
+            {% cache 600 header %}
+        {% endcache %}
+    </head>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        <div class="container">
+            <header class="header">
+                <div style="display: flex;
+                            justify-content: space-between;
+                            align-items: flex-start">
+                    <div>
+                        <h1>Tanda Runner 🎽</h1>
+                        <p>
+                            Designed to help you prepare your next big race. It's greatly inspired by <a href="https://scholar.google.co.uk/citations?view_op=view_citation&hl=en&user=C__krSUAAAAJ&cstart=20&pagesize=80&citation_for_view=C__krSUAAAAJ:j3f4tGmQtD8C"
     target="_blank">Giovanni Tanda's</a> formula, and Christof's amazing <a href="https://crplot.com/" target="_blank">CR plots</a>. The code is over at <a href="https://github.com/duarteocarmo/tandarunner" target="_blank">GitHub</a>.
-                                                </p>
-                                                {% if user.is_authenticated %}
-                                                        <p>Welcome, {{ user.username|title }}!</p>
-                                                {% else %}
-                                                        <p>
-                                                                This is <a href="https://duarteocarmo.com" target="_blank">Duarte's</a> dummy data. Hopefully you're running more than him.
-                                                        </p>
-                                                {% endif %}
-                                        </div>
-                                        {% if not user.is_authenticated %}
-                                                <a href="{% provider_login_url 'strava' %}"
-                                                   class="strava-login"
-                                                   style="display: block">
-                                                        <img src="{% static 'icons/strava.png' %}"
-                                                             alt="Login with Strava"
-                                                             class="strava-logo" />
-                                                </a>
-                                        {% else %}
-                                                <form action="{% url 'account_logout' %}" method="post">
-                                                        {% csrf_token %}
-                                                        <button type="submit">Log Out</button>
-                                                </form>
-                                        {% endif %}
-                                </div>
-                                </header>
-                        <div class="tab-bar">
-                                <button class="tab active"
-                                        hx-get="{% url 'graphs_partial' %}"
-                                        hx-target="#tab-content"
-                                        hx-trigger="load, click"
-                                        hx-swap="innerHTML"
-                                        hx-on::after-request="setActiveTab(this)">Graphs</button>
-                                <button class="tab"
-                                        hx-get="{% url 'chat_partial' %}"
-                                        hx-target="#tab-content"
-                                        hx-swap="innerHTML"
-                                        hx-on::after-request="setActiveTab(this)">Chat</button>
-                        </div>
-                        <div id="tab-content">
-                                <div class="loading">Loading...</div>
-                        </div>
+                        </p>
+                        {% if user.is_authenticated %}
+                            <p>Welcome, {{ user.username|title }}!</p>
+                        {% else %}
+                            <p>
+                                This is <a href="https://duarteocarmo.com" target="_blank">Duarte's</a> dummy data. Hopefully you're running more than him.
+                            </p>
+                        {% endif %}
+                    </div>
+                    {% if not user.is_authenticated %}
+                        <a href="{% provider_login_url 'strava' %}"
+                           class="strava-login"
+                           style="display: block">
+                            <img src="{% static 'icons/strava.png' %}"
+                                 alt="Login with Strava"
+                                 class="strava-logo" />
+                        </a>
+                    {% else %}
+                        <form action="{% url 'account_logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Log Out</button>
+                        </form>
+                    {% endif %}
                 </div>
-        </body>
+            </header>
+            <div class="tab-bar">
+                <button class="tab active"
+                        hx-get="{% url 'graphs_partial' %}"
+                        hx-target="#tab-content"
+                        hx-trigger="load, click"
+                        hx-swap="innerHTML"
+                        hx-on::after-request="setActiveTab(this)">Graphs</button>
+                <button class="tab"
+                        hx-get="{% url 'chat_partial' %}"
+                        hx-target="#tab-content"
+                        hx-swap="innerHTML"
+                        hx-on::after-request="setActiveTab(this)">Chat</button>
+            </div>
+            <div id="tab-content">
+                <div class="loading">Loading...</div>
+            </div>
+        </div>
+    </body>
 </html>

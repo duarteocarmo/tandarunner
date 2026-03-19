@@ -27,8 +27,11 @@ SECRET_KEY = (
 
 DEBUG = os.getenv("DEBUG", "FALSE") == "TRUE"
 DUARTE_ATHLETE_ID = 44717295
-MODEL_ID = "openai/gpt-5.4-nano"
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+AGENT_CONFIG = {
+    "model": "openrouter:mistralai/mistral-small-2603",
+    "temperature": 0.0,
+}
 
 ALLOWED_HOSTS = ["*"]
 INTERNAL_IPS = [
