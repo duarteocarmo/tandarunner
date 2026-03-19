@@ -12,6 +12,21 @@ import requests
 from django.conf import settings
 from django.core.cache import cache
 
+CHART_FONT = "Helvetica, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, Adwaita Sans, Cantarell, Ubuntu, roboto, noto, arial, sans-serif"
+alt.themes.register(
+    "tandarunner",
+    lambda: {
+        "config": {
+            "font": CHART_FONT,
+            "title": {"font": CHART_FONT},
+            "axis": {"labelFont": CHART_FONT, "titleFont": CHART_FONT},
+            "legend": {"labelFont": CHART_FONT, "titleFont": CHART_FONT},
+            "header": {"labelFont": CHART_FONT, "titleFont": CHART_FONT},
+        }
+    },
+)  # noqa: E501
+alt.themes.enable("tandarunner")
+
 logger = logging.getLogger(__name__)
 
 
@@ -57,6 +72,10 @@ def get_stats(
     ytd_total_meters = stats["ytd_run_totals"]["distance"]
     stats["pretty_total_kms"] = ytd_total_meters / 1000
     stats["total_runs"] = stats["ytd_run_totals"]["count"]
+    weeks_elapsed = max(datetime.now().timetuple().tm_yday / 7, 1)
+    stats["avg_weekly_kms"] = round(
+        stats["pretty_total_kms"] / weeks_elapsed, 1
+    )
 
     return stats
 
