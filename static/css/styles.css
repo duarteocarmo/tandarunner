@@ -175,6 +175,7 @@ button {
 @media (max-width: 768px) {
   .container {
     width: 100%;
+    padding: 0 15px;
   }
 
   .visualization {
@@ -183,6 +184,11 @@ button {
 
   .chat-box {
     max-height: calc(60vh);
+  }
+
+  .stats-section {
+    flex-wrap: wrap;
+    gap: 16px;
   }
 }
 

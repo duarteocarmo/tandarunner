@@ -6,20 +6,29 @@ from typing import Any
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.template.loader import render_to_string
+from pydantic_ai.messages import ModelMessage
 
-from tandarunner.chat import SYSTEM_PROMPT, generate_response_to
+from tandarunner.chat import agent
 
 logger = logging.getLogger(__name__)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.messages: list[dict[str, str]] = []
+        self.message_history: list[ModelMessage] = []
         self.user = self.scope["user"]
         self.session = await sync_to_async(self.scope["session"].load)()
+        self.system_context = self._build_system_context()
         await super().connect()
-        await self._init_system_prompt()
         await self._send_welcome_message()
+
+    def _build_system_context(self) -> str:
+        context = ""
+        if not self.user.is_anonymous:
+            athlete_name = self.session.get("athlete", {}).get("firstname", "")
+            if athlete_name:
+                context += f"\n\nThe athlete's name is {athlete_name}."
+        return context
 
     async def receive(self, text_data: str = None, bytes_data: str = None):  # type: ignore[override]
         text_data_json = json.loads(text_data)
@@ -30,20 +39,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         message_text = text_data_json["message"]
-        self.messages.append({"content": message_text, "role": "user"})
-
         await self._send_user_message(message_text)
-        await self._send_ai_response()
-
-    async def _init_system_prompt(self):
-        system_content = SYSTEM_PROMPT
-
-        if not self.user.is_anonymous:
-            athlete_name = self.session.get("athlete", {}).get("firstname", "")
-            if athlete_name:
-                system_content += f"\n\nThe athlete's name is {athlete_name}."
-
-        self.messages.append({"content": system_content, "role": "system"})
+        await self._send_ai_response(message_text)
 
     async def _send_welcome_message(self):
         if self.user.is_anonymous:
@@ -57,7 +54,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "partials/message.html",
             {"message_text": welcome, "is_system": True},
         )
-        self.messages.append({"content": welcome, "role": "assistant"})
 
     async def _send_user_message(self, message_text: str):
         await self._send_html(
@@ -65,7 +61,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {"message_text": message_text, "is_system": False},
         )
 
-    async def _send_ai_response(self):
+    async def _send_ai_response(self, user_message: str):
         self.message_id = f"message-{uuid.uuid4().hex}"
         await self._send_html(
             "partials/message.html",
@@ -79,23 +75,33 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if self.user.is_anonymous:
             await self._not_authorized_response()
         else:
-            await self._generate_ai_response()
+            await self._generate_ai_response(user_message)
 
-    async def _generate_ai_response(self):
-        response = await generate_response_to(self.messages)
+    async def _generate_ai_response(self, user_message: str):
+        prompt = (
+            f"{self.system_context}\n\n{user_message}"
+            if self.system_context and not self.message_history
+            else user_message
+        )
+
         full_text = ""
-        async for chunk in response:
-            if not chunk.choices or not chunk.choices[0].delta.content:
-                continue
-            text = chunk.choices[0].delta.content
-            full_text += text
-            escaped = text.replace("\n", "<br>")
-            await self.send(
-                text_data=f"""<div id='{self.message_id}' hx-swap-oob="beforeend">{escaped}</div>"""
-            )
+        async with agent.iter(
+            prompt, message_history=self.message_history
+        ) as run:
+            async for node in run:
+                if agent.is_model_request_node(node):
+                    async with node.stream(run.ctx) as request_stream:
+                        async for text in request_stream.stream_text(
+                            delta=True
+                        ):
+                            full_text += text
+                            escaped = text.replace("\n", "<br>")
+                            await self.send(
+                                text_data=f"""<div id='{self.message_id}' hx-swap-oob="beforeend">{escaped}</div>"""
+                            )
 
+        self.message_history = run.result.new_messages()
         await self._send_final_message(full_text)
-        self.messages.append({"content": full_text, "role": "assistant"})
 
     async def _send_final_message(self, final_message: str):
         await self._send_html(
@@ -108,10 +114,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=message_html)
 
     async def reset_chat(self):
-        self.messages = []
-        await self._init_system_prompt()
+        self.message_history = []
         content = """<div class="chat-messages" id="message-list" hx-swap-oob="outerHTML"></div>"""
         await self.send(text_data=content)
+        await self._send_welcome_message()
 
     async def _not_authorized_response(self):
         message = render_to_string(

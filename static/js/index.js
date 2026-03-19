@@ -26,6 +26,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (event.target.id === "stopMessage" && state.generating) {
       state.allowSwaps = false;
     }
+    if (event.target.id === "resetChat") {
+      state.allowSwaps = true;
+      state.generating = false;
+    }
   });
 });
 document.addEventListener("htmx:oobBeforeSwap", function (event) {

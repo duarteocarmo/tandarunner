@@ -28,8 +28,7 @@ SECRET_KEY = (
 DEBUG = os.getenv("DEBUG", "FALSE") == "TRUE"
 DUARTE_ATHLETE_ID = 44717295
 MODEL_ID = "openai/gpt-5.4-nano"
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
-OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+assert os.getenv("OPENROUTER_API_KEY"), "OPENROUTER_API_KEY environment variable must be set"
 
 ALLOWED_HOSTS = ["*"]
 INTERNAL_IPS = [

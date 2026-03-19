@@ -13,11 +13,11 @@ dependencies = [
   "whitenoise",
   "channels[daphne]",
   "django-debug-toolbar",
-  "openai",
   "markdown",
   "Twisted[tls,http2]",
   "diskcache",
   "django-extensions",
+  "pydantic-ai-slim[openrouter]>=1.70.0",
 ]
 
 [dependency-groups]
