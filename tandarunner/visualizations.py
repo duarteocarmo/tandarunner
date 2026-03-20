@@ -12,21 +12,6 @@ import requests
 from django.conf import settings
 from django.core.cache import cache
 
-CHART_FONT = "Helvetica, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, Adwaita Sans, Cantarell, Ubuntu, roboto, noto, arial, sans-serif"
-alt.themes.register(
-    "tandarunner",
-    lambda: {
-        "config": {
-            "font": CHART_FONT,
-            "title": {"font": CHART_FONT},
-            "axis": {"labelFont": CHART_FONT, "titleFont": CHART_FONT},
-            "legend": {"labelFont": CHART_FONT, "titleFont": CHART_FONT},
-            "header": {"labelFont": CHART_FONT, "titleFont": CHART_FONT},
-        }
-    },
-)  # noqa: E501
-alt.themes.enable("tandarunner")
-
 logger = logging.getLogger(__name__)
 
 

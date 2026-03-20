@@ -14,7 +14,7 @@
 }
 
 body {
-  font-family: Helvetica, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, Adwaita Sans, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+  font-family: system-ui;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -22,7 +22,6 @@ body {
   min-height: 80vh;
   margin: 0;
   font-size: 90%;
-  letter-spacing: 0.01em;
 }
 
 .container {
@@ -37,20 +36,6 @@ body {
 
 button {
   line-height: 1.2;
-  font-family: inherit;
-  color: inherit;
-  cursor: pointer;
-}
-
-.logout-btn {
-  background: none;
-  border: 1px solid currentColor;
-  padding: 6px 16px;
-  font-size: 0.85em;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-radius: 0;
 }
 
 .strava-logo {
@@ -77,8 +62,6 @@ button {
   font-size: 1em;
   font-family: inherit;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: inherit;
   -webkit-appearance: none;
   opacity: 0.6;
@@ -120,9 +103,8 @@ button {
 }
 
 .stats-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 16px;
+  display: flex;
+  gap: 32px;
   padding: 10px 0;
 }
 
@@ -208,16 +190,18 @@ button {
   }
 
   .stats-section {
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .stat-item {
+    min-width: calc(50% - 16px);
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  body {
-    background-color: #333;
-  }
   .popover-content {
-    background-color: #333;
+    background-color: black;
   }
   .chat-message img.logo {
     filter: invert(1);

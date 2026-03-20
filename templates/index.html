@@ -10,7 +10,7 @@
         <meta name="color-scheme" content="light dark" />
         <title>Tanda Runner</title>
         <link rel="icon"
-              href="data:image/svg+xml, <svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22> <text y=%22.9em%22 font-size=%2290%22>T</text> </svg> ">
+              href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👟</text></svg>">
             {% load cache %}
             <link rel="stylesheet" href="{% static 'css/styles.css' %}">
             <script src="{% static 'js/index.js' %}"></script>
@@ -34,7 +34,7 @@
                             justify-content: space-between;
                             align-items: flex-start">
                     <div>
-                        <h1 style="text-transform: uppercase; font-weight: 900; letter-spacing: -0.02em">Tanda Runner</h1>
+                        <h1>TANDA RUNNER</h1>
                         <p>
                             Designed to help you prepare your next big race. It's greatly inspired by <a href="https://scholar.google.co.uk/citations?view_op=view_citation&hl=en&user=C__krSUAAAAJ&cstart=20&pagesize=80&citation_for_view=C__krSUAAAAJ:j3f4tGmQtD8C"
     target="_blank">Giovanni Tanda's</a> formula, and Christof's amazing <a href="https://crplot.com/" target="_blank">CR plots</a>. The code is over at <a href="https://github.com/duarteocarmo/tandarunner" target="_blank">GitHub</a>.
@@ -56,7 +56,7 @@
                     {% else %}
                         <form action="{% url 'account_logout' %}" method="post">
                             {% csrf_token %}
-                            <button type="submit" class="logout-btn">Log Out</button>
+                            <button type="submit">Log Out</button>
                         </form>
                     {% endif %}
                 </div>
@@ -67,12 +67,12 @@
                         hx-target="#tab-content"
                         hx-trigger="load, click"
                         hx-swap="innerHTML"
-                        hx-on::after-request="setActiveTab(this)">Graphs</button>
+                        hx-on::after-request="setActiveTab(this)">GRAPHS</button>
                 <button class="tab"
                         hx-get="{% url 'chat_partial' %}"
                         hx-target="#tab-content"
                         hx-swap="innerHTML"
-                        hx-on::after-request="setActiveTab(this)">Chat</button>
+                        hx-on::after-request="setActiveTab(this)">CHAT</button>
             </div>
             <div id="tab-content">
                 <div class="loading">Loading...</div>
