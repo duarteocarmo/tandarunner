@@ -13,6 +13,18 @@
   display: none;
 }
 
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: currentColor;
+  opacity: 0.8;
+}
+
+a:hover {
+  opacity: 1;
+}
+
 body {
   font-family: system-ui;
   display: flex;
@@ -47,6 +59,10 @@ button {
   padding: 10px 0;
 }
 
+.header p {
+  opacity: 0.6;
+}
+
 .tab-bar {
   display: flex;
   gap: 16px;
@@ -76,8 +92,12 @@ button {
   opacity: 1;
 }
 
-#tab-content {
+#tab-graphs, #tab-chat {
   padding: 10px 0;
+}
+
+.tab-pane-hidden {
+  display: none;
 }
 
 .loading {
@@ -88,6 +108,12 @@ button {
   justify-content: center;
   align-items: center;
   opacity: 0.4;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.15; }
 }
 
 .visualization {
@@ -102,6 +128,8 @@ button {
   width: 100%;
 }
 
+
+
 .stats-section {
   display: flex;
   gap: 32px;
@@ -115,14 +143,19 @@ button {
 }
 
 .stat-label {
-  font-size: 0.85em;
-  opacity: 0.6;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
 }
 
 .stat-value {
   font-size: 1.4em;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
+
+
 
 .chat-box {
   padding: 10px;
@@ -197,6 +230,8 @@ button {
   .stat-item {
     min-width: calc(50% - 16px);
   }
+
+
 }
 
 @media (prefers-color-scheme: dark) {

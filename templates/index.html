@@ -35,9 +35,10 @@
                             align-items: flex-start">
                     <div>
                         <h1>TANDA RUNNER</h1>
+                        <p>An opinionated running dashboard.</p>
                         <p>
-                            Designed to help you prepare your next big race. It's greatly inspired by <a href="https://scholar.google.co.uk/citations?view_op=view_citation&hl=en&user=C__krSUAAAAJ&cstart=20&pagesize=80&citation_for_view=C__krSUAAAAJ:j3f4tGmQtD8C"
-    target="_blank">Giovanni Tanda's</a> formula, and Christof's amazing <a href="https://crplot.com/" target="_blank">CR plots</a>. The code is over at <a href="https://github.com/duarteocarmo/tandarunner" target="_blank">GitHub</a>.
+                            Inspired by <a href="https://scholar.google.co.uk/citations?view_op=view_citation&hl=en&user=C__krSUAAAAJ&cstart=20&pagesize=80&citation_for_view=C__krSUAAAAJ:j3f4tGmQtD8C"
+    target="_blank">Giovanni Tanda's</a> formula, and Christof's amazing <a href="https://crplot.com/" target="_blank">CR plots</a>. <a href="https://github.com/duarteocarmo/tandarunner" target="_blank">Source code</a>.
                         </p>
                         {% if not user.is_authenticated %}
                             <p>
@@ -63,19 +64,20 @@
             </header>
             <div class="tab-bar">
                 <button class="tab active"
-                        hx-get="{% url 'graphs_partial' %}"
-                        hx-target="#tab-content"
-                        hx-trigger="load, click"
-                        hx-swap="innerHTML"
-                        hx-on::after-request="setActiveTab(this)">GRAPHS</button>
+                        onclick="switchTab('graphs', this)">GRAPHS</button>
                 <button class="tab"
-                        hx-get="{% url 'chat_partial' %}"
-                        hx-target="#tab-content"
-                        hx-swap="innerHTML"
-                        hx-on::after-request="setActiveTab(this)">CHAT</button>
+                        onclick="switchTab('chat', this)">CHAT</button>
             </div>
-            <div id="tab-content">
+            <div id="tab-graphs"
+                 hx-get="{% url 'graphs_partial' %}"
+                 hx-trigger="load"
+                 hx-swap="innerHTML">
                 <div class="loading">Loading...</div>
+            </div>
+            <div id="tab-chat" class="tab-pane-hidden"
+                 hx-get="{% url 'chat_partial' %}"
+                 hx-trigger="load"
+                 hx-swap="innerHTML">
             </div>
         </div>
     </body>

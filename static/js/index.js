@@ -1,9 +1,12 @@
 // tab switching
-function setActiveTab(el) {
+function switchTab(tabName, el) {
   document
     .querySelectorAll(".tab")
     .forEach((t) => t.classList.remove("active"));
   el.classList.add("active");
+
+  document.getElementById("tab-graphs").classList.toggle("tab-pane-hidden", tabName !== "graphs");
+  document.getElementById("tab-chat").classList.toggle("tab-pane-hidden", tabName !== "chat");
 }
 
 // vega chart rendering with theme support
@@ -22,6 +25,7 @@ function renderVegaCharts() {
   const vega_theme = getVegaTheme();
   Object.keys(visualizations).forEach(function (key) {
     const spec = JSON.parse(visualizations[key]);
+    spec.background = "transparent";
     vegaEmbed("#" + key, spec, {
       renderer: "svg",
       actions: false,
@@ -31,7 +35,9 @@ function renderVegaCharts() {
 }
 
 document.addEventListener("htmx:afterSettle", function (event) {
-  renderVegaCharts();
+  if (event.detail.target.id === "tab-graphs") {
+    renderVegaCharts();
+  }
 });
 
 window
