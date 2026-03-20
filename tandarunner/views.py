@@ -73,5 +73,27 @@ def graphs_partial(request: HttpRequest) -> HttpResponse:
 
 
 @require_http_methods(["GET"])
+def stats_partial(request: HttpRequest) -> HttpResponse:
+    user = request.user
+    data = {}
+
+    if user.is_authenticated:
+        access_token = get_access_token(user)
+        athlete = get_athlete(access_token)
+        athlete_id = athlete["id"]
+        results = get_visualizations(access_token.token, athlete_id)
+        stats = get_stats(access_token.token, athlete_id)
+        data = {
+            "stats": stats,
+            "current_tanda": results["current_tanda"],
+            "current_tanda_pace": results["current_tanda_pace"],
+            "avg_hr_per_km": results["avg_hr_per_km"],
+        }
+        logger.info("Prepared stats data.")
+
+    return TemplateResponse(request, "partials/stats.html", data)
+
+
+@require_http_methods(["GET"])
 def chat_partial(request: HttpRequest) -> HttpResponse:
     return TemplateResponse(request, "partials/chat.html")

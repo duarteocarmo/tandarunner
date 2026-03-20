@@ -92,7 +92,7 @@ button {
   opacity: 1;
 }
 
-#tab-graphs, #tab-chat {
+#tab-graphs, #tab-stats, #tab-chat {
   padding: 10px 0;
 }
 
@@ -130,10 +130,16 @@ button {
 
 
 
-.stats-section {
+.stats-container {
+  padding: 10px;
+  border-radius: 5px;
+  border: 0.5px solid var(--border-color);
   display: flex;
-  gap: 32px;
-  padding: 10px 0;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 24px;
+  height: 80vh;
+  align-content: flex-start;
 }
 
 .stat-item {
@@ -208,6 +214,13 @@ button {
   padding-top: 5px;
 }
 
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0;
+  opacity: 0.6;
+}
+
 @media (max-width: 768px) {
   .container {
     width: 100%;
@@ -222,13 +235,9 @@ button {
     max-height: calc(60vh);
   }
 
-  .stats-section {
-    flex-wrap: wrap;
+  .stats-container {
     gap: 16px;
-  }
-
-  .stat-item {
-    min-width: calc(50% - 16px);
+    max-height: calc(60vh);
   }
 
 

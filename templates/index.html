@@ -38,7 +38,7 @@
                         <p>An opinionated running dashboard.</p>
                         <p>
                             Inspired by <a href="https://scholar.google.co.uk/citations?view_op=view_citation&hl=en&user=C__krSUAAAAJ&cstart=20&pagesize=80&citation_for_view=C__krSUAAAAJ:j3f4tGmQtD8C"
-    target="_blank">Giovanni Tanda's</a> formula, and Christof's amazing <a href="https://crplot.com/" target="_blank">CR plots</a>. <a href="https://github.com/duarteocarmo/tandarunner" target="_blank">Source code</a>.
+    target="_blank">Giovanni Tanda's</a> formula, and Christof's amazing <a href="https://crplot.com/" target="_blank">CR plots</a>.
                         </p>
                         {% if not user.is_authenticated %}
                             <p>
@@ -66,6 +66,8 @@
                 <button class="tab active"
                         onclick="switchTab('graphs', this)">GRAPHS</button>
                 <button class="tab"
+                        onclick="switchTab('stats', this)">STATS</button>
+                <button class="tab"
                         onclick="switchTab('chat', this)">CHAT</button>
             </div>
             <div id="tab-graphs"
@@ -74,11 +76,20 @@
                  hx-swap="innerHTML">
                 <div class="loading">Loading...</div>
             </div>
+            <div id="tab-stats" class="tab-pane-hidden"
+                 hx-get="{% url 'stats_partial' %}"
+                 hx-trigger="load"
+                 hx-swap="innerHTML">
+            </div>
             <div id="tab-chat" class="tab-pane-hidden"
                  hx-get="{% url 'chat_partial' %}"
                  hx-trigger="load"
                  hx-swap="innerHTML">
             </div>
+            <footer class="footer">
+                <a href="https://duarteocarmo.com" target="_blank">About me</a>
+                <a href="https://github.com/duarteocarmo/tandarunner" target="_blank">GitHub</a>
+            </footer>
         </div>
     </body>
 </html>

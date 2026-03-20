@@ -1,28 +1,4 @@
 {{ visualizations|json_script:"visualizations" }}
-{% if stats %}
-<div class="stats-section">
-        <div class="stat-item">
-                <span class="stat-label">Distance YTD</span>
-                <span class="stat-value">{{ stats.pretty_total_kms|floatformat:"0" }} km</span>
-        </div>
-        <div class="stat-item">
-                <span class="stat-label">Runs YTD</span>
-                <span class="stat-value">{{ stats.total_runs }}</span>
-        </div>
-        <div class="stat-item">
-                <span class="stat-label">Predicted marathon</span>
-                <span class="stat-value">{{ current_tanda }} ({{ current_tanda_pace }})</span>
-        </div>
-        <div class="stat-item">
-                <span class="stat-label">Avg HR per km</span>
-                <span class="stat-value">{{ avg_hr_per_km }}</span>
-        </div>
-        <div class="stat-item">
-                <span class="stat-label">Avg weekly km</span>
-                <span class="stat-value">{{ stats.avg_weekly_kms }} km</span>
-        </div>
-</div>
-{% endif %}
 <div class="visualization">
         <div class="chart" id="weekly_chart"></div>
         <div class="chart" id="running_heatmap"></div>

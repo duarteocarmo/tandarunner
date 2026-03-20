@@ -5,8 +5,18 @@ function switchTab(tabName, el) {
     .forEach((t) => t.classList.remove("active"));
   el.classList.add("active");
 
-  document.getElementById("tab-graphs").classList.toggle("tab-pane-hidden", tabName !== "graphs");
-  document.getElementById("tab-chat").classList.toggle("tab-pane-hidden", tabName !== "chat");
+  document.querySelectorAll("[id^='tab-']").forEach(function (pane) {
+    if (pane.id === "tab-" + tabName) {
+      pane.classList.remove("tab-pane-hidden");
+    } else if (!pane.closest(".tab-bar")) {
+      pane.classList.add("tab-pane-hidden");
+    }
+  });
+
+  if (tabName === "graphs" && window._vegaThemeChanged) {
+    window._vegaThemeChanged = false;
+    renderVegaCharts();
+  }
 }
 
 // vega chart rendering with theme support
@@ -42,7 +52,14 @@ document.addEventListener("htmx:afterSettle", function (event) {
 
 window
   .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", renderVegaCharts);
+  .addEventListener("change", function () {
+    if (!document.getElementById("tab-graphs").classList.contains("tab-pane-hidden")) {
+      renderVegaCharts();
+    } else {
+      // flag to re-render when graphs tab becomes visible
+      window._vegaThemeChanged = true;
+    }
+  });
 
 // after sending message, clear input box and reset height
 document.addEventListener("htmx:wsAfterSend", function () {
