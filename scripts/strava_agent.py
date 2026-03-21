@@ -144,6 +144,8 @@ agent = Agent(
     deps_type=duckdb.DuckDBPyConnection,
 )
 
+query_lock = asyncio.Lock()
+
 
 @agent.system_prompt
 def add_current_time() -> str:
@@ -162,14 +164,15 @@ def add_schema_context(ctx: RunContext[duckdb.DuckDBPyConnection]) -> str:
 
 
 @agent.tool
-def run_query(
+async def run_query(
     ctx: RunContext[duckdb.DuckDBPyConnection], sql: str, reason: str
 ) -> str:
     """Run a SQL query against the data view. Returns results as a formatted string. Provide a short reason explaining what this query is for."""
     print(f"[query] {reason}")
     try:
-        result = ctx.deps.execute(sql)
-        df = result.fetchdf()
+        async with query_lock:
+            result = ctx.deps.execute(sql)
+            df = result.fetchdf()
         if df.empty:
             return "Query returned no results."
         return df.to_string(max_rows=MAX_RESULT_ROWS, max_cols=MAX_RESULT_COLS)
