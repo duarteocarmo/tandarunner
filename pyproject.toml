@@ -18,6 +18,7 @@ dependencies = [
   "diskcache",
   "django-extensions",
   "pydantic-ai-slim[openrouter]>=1.70.0",
+  "duckdb",
 ]
 
 [dependency-groups]

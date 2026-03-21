@@ -301,7 +301,10 @@ async def main():
         sys.exit(1)
 
     conn = get_connection(args.data)
-    row_count = conn.execute(f"SELECT COUNT(*) FROM {VIEW_NAME}").fetchone()[0]
+    row_count_result = conn.execute(
+        f"SELECT COUNT(*) FROM {VIEW_NAME}"
+    ).fetchone()
+    row_count = row_count_result[0] if row_count_result else 0
     print(f"Loaded {args.data} ({row_count} activities)")
 
     if args.question:

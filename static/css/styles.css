@@ -206,6 +206,11 @@ button {
   margin: 0 0 5px;
 }
 
+.chat-thinking {
+  font-style: italic;
+  opacity: 0.6;
+}
+
 .right {
   display: flex;
   flex-direction: row;
