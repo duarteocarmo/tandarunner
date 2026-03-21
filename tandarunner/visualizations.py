@@ -713,13 +713,13 @@ def viz_cumulative_yearly_distance(all_activities: list) -> str:
     daily["cumulative_km"] = daily.groupby("year")["distance_km"].cumsum()
     daily["year_str"] = daily["year"].astype(str)
 
-    current_year = datetime.now().year
-    current = daily[daily["year"] == current_year]
-    past = daily[daily["year"] != current_year]
+    years = sorted(daily["year"].unique())
+    year_colors = ["#d4d4d4", "#f59e0b", "#ff561b"]
+    color_map = {str(y): year_colors[i] for i, y in enumerate(years[-3:])}
 
-    past_lines = (
-        alt.Chart(past)
-        .mark_line(strokeDash=[4, 4], opacity=0.7)
+    chart = (
+        alt.Chart(daily)
+        .mark_line(strokeWidth=2)
         .encode(
             x=alt.X(
                 "day_of_year:Q",
@@ -731,30 +731,14 @@ def viz_cumulative_yearly_distance(all_activities: list) -> str:
                 title="Cumulative km",
                 axis=alt.Axis(tickCount=5),
             ),
-            color=alt.Color("year_str:N", title="Year"),
-            tooltip=[
-                alt.Tooltip("year_str:N", title="Year"),
-                alt.Tooltip("day_of_year:Q", title="Day"),
-                alt.Tooltip("cumulative_km:Q", title="Km", format=".0f"),
-            ],
-        )
-    )
-
-    current_line = (
-        alt.Chart(current)
-        .mark_line(strokeWidth=3)
-        .encode(
-            x=alt.X(
-                "day_of_year:Q",
-                title="Day of year",
-                scale=alt.Scale(domain=[1, 365]),
+            color=alt.Color(
+                "year_str:N",
+                title="Year",
+                scale=alt.Scale(
+                    domain=list(color_map.keys()),
+                    range=list(color_map.values()),
+                ),
             ),
-            y=alt.Y(
-                "cumulative_km:Q",
-                title="Cumulative km",
-                axis=alt.Axis(tickCount=5),
-            ),
-            color=alt.Color("year_str:N", title="Year"),
             tooltip=[
                 alt.Tooltip("year_str:N", title="Year"),
                 alt.Tooltip("day_of_year:Q", title="Day"),
@@ -764,13 +748,11 @@ def viz_cumulative_yearly_distance(all_activities: list) -> str:
     )
 
     return (
-        (past_lines + current_line)
-        .properties(
+        chart.properties(
             width="container",
             height=250,
             title="Cumulative Yearly Distance",
-        )
-        .configure_legend(orient="top")
+        ).configure_legend(orient="top")
     ).to_json()
 
 
