@@ -214,6 +214,11 @@ else:
         }
     }
 
+CACHE_TTL_ATHLETE = 3600
+CACHE_TTL_STATS = 3600
+CACHE_TTL_ACTIVITIES = 300
+CACHE_TTL_VISUALIZATIONS = 300
+
 
 if not DEBUG:
     print("Running with prod settings!!!")

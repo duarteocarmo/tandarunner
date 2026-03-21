@@ -49,11 +49,16 @@ def get_stats(
     athlete_id: int,
     base_url: str = settings.STRAVA_BASE_URL,
 ) -> dict:
+    cache_key = f"stats-{athlete_id}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        logger.info("Found stats in cache.")
+        return cached
+
     url = f"{base_url}/athletes/{athlete_id}/stats"
     headers = {"Authorization": f"Bearer {access_token}"}
     stats = requests.get(url, headers=headers).json()
 
-    logger.info("Got athlete stats.")
     ytd_total_meters = stats["ytd_run_totals"]["distance"]
     stats["pretty_total_kms"] = ytd_total_meters / 1000
     stats["total_runs"] = stats["ytd_run_totals"]["count"]
@@ -62,6 +67,8 @@ def get_stats(
         stats["pretty_total_kms"] / weeks_elapsed, 1
     )
 
+    cache.set(cache_key, stats, timeout=settings.CACHE_TTL_STATS)
+    logger.info("Fetched and cached athlete stats.")
     return stats
 
 
@@ -137,9 +144,9 @@ def _fetch_activity_chunk(access_token: str, after: int, before: int) -> list:
     return activities
 
 
-def fetch_all_activities(access_token: str) -> list:
-    cache_id = f"activities-{access_token}"
-    cached = cache.get(cache_id)
+def fetch_all_activities(access_token: str, athlete_id: int) -> list:
+    cache_key = f"activities-{athlete_id}"
+    cached = cache.get(cache_key)
     if cached is not None:
         logger.info("Found activities in cache.")
         return cached
@@ -160,13 +167,13 @@ def fetch_all_activities(access_token: str) -> list:
         for future in as_completed(futures):
             all_activities.extend(future.result())
 
-    cache.set(cache_id, all_activities)
+    cache.set(cache_key, all_activities, timeout=settings.CACHE_TTL_ACTIVITIES)
     logger.info(f"Fetched {len(all_activities)} activities in parallel.")
     return all_activities
 
 
-def prepare_data(access_token: str) -> tuple:
-    all_activities = fetch_all_activities(access_token)
+def prepare_data(access_token: str, athlete_id: int) -> tuple:
+    all_activities = fetch_all_activities(access_token, athlete_id=athlete_id)
     cutoff = datetime.now() - timedelta(days=DAYS_BACK)
     activities = [
         act
@@ -827,13 +834,16 @@ def viz_cumulative_yearly_distance(all_activities: list) -> str:
 def get_visualizations(
     access_token: str, athlete_id: int
 ) -> VisualizationResults:
-    cache_id = f"viz-{access_token}"
-    if cache_id in cache:
+    cache_key = f"viz-{athlete_id}"
+    cached = cache.get(cache_key)
+    if cached is not None:
         logger.info("Found viz data in cache.")
-        return cache.get(cache_id)
+        return cached
 
-    all_activities = fetch_all_activities(access_token)
-    weekly_data, daily_df, running_activities = prepare_data(access_token)
+    all_activities = fetch_all_activities(access_token, athlete_id=athlete_id)
+    weekly_data, daily_df, running_activities = prepare_data(
+        access_token, athlete_id=athlete_id
+    )
     logger.info("Prepared data.")
 
     tanda_series = daily_df["rolling_tanda_day"].dropna()
@@ -880,7 +890,7 @@ def get_visualizations(
             pickle.dump(results, f)
         logger.info("Saved dummy data from Duarte.")
 
-    cache.set(cache_id, results)
+    cache.set(cache_key, results, timeout=settings.CACHE_TTL_VISUALIZATIONS)
     logger.info("Ran computation for graphs and set cache.")
 
     return results

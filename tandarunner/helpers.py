@@ -4,6 +4,7 @@ from datetime import timedelta
 import requests
 from allauth.socialaccount.models import SocialToken
 from django.conf import settings
+from django.core.cache import cache
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,12 @@ def refresh_token(access_token):
 
 
 def get_athlete(access_token) -> dict:
+    cache_key = f"athlete-{access_token.account.uid}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        logger.info("Found athlete in cache.")
+        return cached
+
     url = f"{settings.STRAVA_BASE_URL}/athlete"
     headers = {"Authorization": f"Bearer {access_token.token}"}
     response = requests.get(url, headers=headers)
@@ -51,7 +58,10 @@ def get_athlete(access_token) -> dict:
             f"There was an error requesting: {response.status_code}"
         )
 
-    return response.json()
+    result = response.json()
+    cache.set(cache_key, result, timeout=settings.CACHE_TTL_ATHLETE)
+    logger.info("Fetched and cached athlete profile.")
+    return result
 
 
 def get_access_token(user):

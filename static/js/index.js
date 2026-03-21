@@ -13,6 +13,13 @@ function switchTab(tabName, el) {
     }
   });
 
+  // trigger HTMX lazy load for tabs that use custom events
+  var pane = document.getElementById("tab-" + tabName);
+  if (pane && !pane.dataset.loaded) {
+    htmx.trigger(pane, "tab-" + tabName);
+    pane.dataset.loaded = "true";
+  }
+
   if (tabName === "graphs" && window._vegaThemeChanged) {
     window._vegaThemeChanged = false;
     renderVegaCharts();
