@@ -1,7 +1,6 @@
 import logging
 import os
 import pickle
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from typing import Any, TypedDict
 
@@ -11,6 +10,8 @@ import pandas
 import requests
 from django.conf import settings
 from django.core.cache import cache
+
+from tandarunner.helpers import fetch_all_activities
 
 logger = logging.getLogger(__name__)
 
@@ -112,64 +113,6 @@ def pace_tick_formatter(value):
     minutes = int(value // 60)
     seconds = int(value % 60)
     return f"{minutes}:{seconds:02d}"
-
-
-def _fetch_activity_chunk(access_token: str, after: int, before: int) -> list:
-    url = f"{settings.STRAVA_BASE_URL}/athlete/activities"
-    headers = {"Authorization": f"Bearer {access_token}"}
-    per_page = 200
-    page = 1
-    activities = []
-
-    while True:
-        params = {
-            "after": after,
-            "before": before,
-            "page": page,
-            "per_page": per_page,
-        }
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()
-        batch = response.json()
-
-        if not batch:
-            break
-
-        activities.extend(batch)
-        if len(batch) < per_page:
-            break
-
-        page += 1
-
-    return activities
-
-
-def fetch_all_activities(access_token: str, athlete_id: int) -> list:
-    cache_key = f"activities-{athlete_id}"
-    cached = cache.get(cache_key)
-    if cached is not None:
-        logger.info("Found activities in cache.")
-        return cached
-
-    now = datetime.now()
-    chunks = []
-    for i in range(3):
-        start = int((now - timedelta(days=365 * (i + 1))).timestamp())
-        end = int((now - timedelta(days=365 * i)).timestamp())
-        chunks.append((start, end))
-
-    all_activities = []
-    with ThreadPoolExecutor(max_workers=3) as executor:
-        futures = [
-            executor.submit(_fetch_activity_chunk, access_token, after, before)
-            for after, before in chunks
-        ]
-        for future in as_completed(futures):
-            all_activities.extend(future.result())
-
-    cache.set(cache_key, all_activities, timeout=settings.CACHE_TTL_ACTIVITIES)
-    logger.info(f"Fetched {len(all_activities)} activities in parallel.")
-    return all_activities
 
 
 def prepare_data(access_token: str, athlete_id: int) -> tuple:
