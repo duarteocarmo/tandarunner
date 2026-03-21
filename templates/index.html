@@ -78,12 +78,12 @@
             </div>
             <div id="tab-stats" class="tab-pane-hidden"
                  hx-get="{% url 'stats_partial' %}"
-                 hx-trigger="tab-stats"
+                 hx-trigger="load"
                  hx-swap="innerHTML">
             </div>
             <div id="tab-chat" class="tab-pane-hidden"
                  hx-get="{% url 'chat_partial' %}"
-                 hx-trigger="tab-chat"
+                 hx-trigger="load"
                  hx-swap="innerHTML">
             </div>
             <footer class="footer">
