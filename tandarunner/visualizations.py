@@ -848,7 +848,3 @@ def clean_df(df: pandas.DataFrame) -> pandas.DataFrame:
             logger.warning(f"Column {col} not found in DataFrame.")
 
     return df[columns.keys()].rename(columns=columns, inplace=False)
-
-
-def get_dummy_activities() -> pandas.DataFrame:
-    return clean_df(pandas.read_csv("./static/dummy/running_activities.csv"))

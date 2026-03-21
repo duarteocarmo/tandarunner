@@ -1,52 +1,37 @@
 # Tanda Runner
 
-A nice description
+An opinionated running dashboard.
 
 ## Development
 
-Note: We use [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-started) for installing things, make sure you have it.
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management.
 
-1. Make sure you are running in a virtual environment (e.g., `python3 -m venv .env`)
-2. Activate it (e.g. `source .env/bin/activate`)
+1. Install dependencies:
 
-```shell
-(.env) $ make install-dev
+```bash
+make install
 ```
 
-3. Run the tests
+2. Run checks:
 
-```shell
-(.env) $ make test
+```bash
+make check
 ```
 
-4. Run the Web App
+3. Run tests:
 
-```shell
-(.env) $ make app
+```bash
+make test
 ```
 
-5. For more help:
-```shell
-(.env) $ make help
+4. Run the app locally:
+
+```bash
+make run
 ```
 
-## TODO 
+5. See all commands:
 
-- [x] Chat send on enter
-- [x] Loading on send
-- [x] Clear conversation
-- [x] Cannot chat if not logged in 
-- [x] If not logged in, see the charts from Duarte 
-- [x] Cache fetching using diskcache for long computations
-- [x] Small description of the app
-- [x] Logout button
-- [x] Deployment
-- [x] Adjust weekly running graph for no cut out
-- [x] Cleaner rolling tanda chart
-- [x] Make sure no cutoffs when openning on laptop
-- [x] Adjust progression graph, so you can actually see progression...
-- [x] Yearly distance stats
-- [x] GitHub style running consistency graph
-- [x] Build insights generation pipeline (on login/page render)
-- [x] Better experience on mobile
-- [x] Ship that shit.
+```bash
+make help
+```
