@@ -2,7 +2,7 @@
 
 An opinionated running dashboard.
 
-![Tanda Runner](images/screenshot.png)
+[![Tanda Runner](images/screenshot.png)](https://tandarunner.duarteocarmo.com)
 
 ## Development
 
