@@ -19,6 +19,7 @@ dependencies = [
   "django-extensions",
   "pydantic-ai-slim[openrouter]>=1.70.0",
   "duckdb",
+  "icalendar>=7.0.3",
 ]
 
 [dependency-groups]
@@ -56,7 +57,7 @@ extend_exclude = ["notebooks", "research", "scripts"]
 
 [tool.deptry.per_rule_ignores]
 DEP002 = ["whitenoise", "daphne", "django-debug-toolbar", "django-extensions", "Twisted", "diskcache"]
-DEP003 = ["asgiref", "requests"]
+DEP003 = ["asgiref", "requests", "pydantic", "icalendar"]
 
 [tool.coverage.paths]
 source = ["src"]

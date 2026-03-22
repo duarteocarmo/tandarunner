@@ -89,16 +89,29 @@ document.addEventListener("htmx:afterSettle", function (event) {
   }
 });
 
+// enable plan form once graph data is loaded
+document.addEventListener("htmx:afterSettle", function (event) {
+  if (event.detail.target.id === "tab-graphs") {
+    var planGoal = document.getElementById("plan-goal");
+    var planSubmit = document.getElementById("plan-submit");
+    if (planGoal) planGoal.disabled = false;
+    if (planSubmit) planSubmit.disabled = false;
+  }
+});
+
 // after sending message, clear input box and reset height
 document.addEventListener("htmx:wsAfterSend", function () {
-  document.getElementById("messageinput").value = "";
-  document.getElementById("messageinput").style.height = "auto";
+  var chatInput = document.getElementById("messageinput");
+  if (chatInput) {
+    chatInput.value = "";
+    chatInput.style.height = "auto";
+  }
 });
 
 // scroll to bottom of chat after receiving a message
 document.addEventListener("htmx:wsAfterMessage", function () {
-  const chatUI = document.getElementById("message-list");
-  chatUI.scrollTop = chatUI.scrollHeight;
+  var chatUI = document.getElementById("message-list");
+  if (chatUI) chatUI.scrollTop = chatUI.scrollHeight;
 });
 
 // handle state and cancellation while generating

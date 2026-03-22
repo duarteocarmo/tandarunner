@@ -1,0 +1,23 @@
+<div class="tab-box" hx-ext="ws" ws-connect="/ws/plan/">
+    <p class="plan-hint">Describe your running goal and we'll generate a personalized training plan based on your Strava data. You'll get a calendar link you can subscribe to.</p>
+    <form id="plan-form"
+          ws-send
+          hx-trigger="click from:#plan-submit">
+        <div class="plan-field">
+            <label class="stat-label" for="plan-goal">Goal</label>
+            <textarea id="plan-goal"
+                      class="textarea"
+                      name="goal"
+                      rows="3"
+                      placeholder="e.g. Half marathon on June 15th, targeting 1:30, max 4 days/week, long runs on Sundays"
+                      required
+                      disabled></textarea>
+        </div>
+        <div class="right">
+            <button type="submit" id="plan-submit" disabled>Generate</button>
+        </div>
+    </form>
+    <div id="plan-status" class="bordered-block plan-status"></div>
+    <div id="plan-result"></div>
+</div>
+<script>htmx.process(document.querySelector(".plan-box"));</script>

@@ -7,4 +7,10 @@ urlpatterns = [
     path("partials/graphs/", views.graphs_partial, name="graphs_partial"),
     path("partials/stats/", views.stats_partial, name="stats_partial"),
     path("partials/chat/", views.chat_partial, name="chat_partial"),
+    path("partials/plan/", views.plan_partial, name="plan_partial"),
+    path(
+        "plan/<str:plan_id>/calendar.ics",
+        views.plan_calendar,
+        name="plan_calendar",
+    ),
 ]

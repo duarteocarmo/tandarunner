@@ -5,29 +5,32 @@ from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.fallback import FallbackModel
 from pydantic_ai.models.openrouter import OpenRouterModelSettings
 
-from tandarunner.chat_agent.prompts import REFERENCE_QUERIES, SYSTEM_PROMPT
-from tandarunner.chat_agent.tools import ChatAgentDeps, register_chat_tools
+from tandarunner.agents.deps import AgentDeps
+from tandarunner.agents.plan.prompts import REFERENCE_QUERIES, SYSTEM_PROMPT
+from tandarunner.agents.plan.schemas import TrainingPlanResult
+from tandarunner.agents.tools import register_calendar_tool, register_sql_tool
 
 if settings.OPENROUTER_API_KEY is None:
     raise ValueError("OPENROUTER_API_KEY is not set")
 
 fallback_model = FallbackModel(
-    settings.AGENT_CONFIG["model"],
-    settings.AGENT_CONFIG["fallback_model"],
+    settings.PLAN_AGENT_CONFIG["model"],
+    settings.PLAN_AGENT_CONFIG["fallback_model"],
 )
 
 agent = Agent(
     model=fallback_model,
     system_prompt=SYSTEM_PROMPT,
-    deps_type=ChatAgentDeps,
+    output_type=TrainingPlanResult,
+    deps_type=AgentDeps,
     model_settings=OpenRouterModelSettings(
-        temperature=settings.AGENT_CONFIG["temperature"],
+        temperature=settings.PLAN_AGENT_CONFIG["temperature"],
     ),
 )
 
 
 @agent.system_prompt
-def add_athlete_name(ctx: RunContext[ChatAgentDeps]) -> str:
+def add_athlete_name(ctx: RunContext[AgentDeps]) -> str:
     if ctx.deps.athlete_name:
         return f"The athlete's name is {ctx.deps.athlete_name}."
     return ""
@@ -40,7 +43,7 @@ def add_current_time() -> str:
 
 
 @agent.system_prompt
-def add_schema_context(ctx: RunContext[ChatAgentDeps]) -> str:
+def add_schema_context(ctx: RunContext[AgentDeps]) -> str:
     sections: list[str] = []
     for query, description in REFERENCE_QUERIES.items():
         try:
@@ -53,4 +56,5 @@ def add_schema_context(ctx: RunContext[ChatAgentDeps]) -> str:
     return "Reference queries and results:\n\n" + "\n\n".join(sections)
 
 
-register_chat_tools(agent=agent)
+register_sql_tool(agent=agent)
+register_calendar_tool(agent=agent)

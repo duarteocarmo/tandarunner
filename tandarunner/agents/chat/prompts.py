@@ -1,4 +1,4 @@
-VIEW_NAME = "data"
+from tandarunner.agents.deps import VIEW_NAME
 
 REFERENCE_QUERIES = {
     f"DESCRIBE {VIEW_NAME}": "Schema of the dataset",

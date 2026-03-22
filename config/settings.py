@@ -203,6 +203,14 @@ AGENT_CONFIG = {
     "max_result_cols": 20,
 }
 
+PLAN_AGENT_CONFIG = {
+    "model": "openrouter:google/gemini-3-flash-preview",
+    "fallback_model": "openrouter:qwen/qwen3.5-122b-a10b",
+    "temperature": 0.0,
+    "max_result_rows": 50,
+    "max_result_cols": 20,
+}
+
 # Production overrides
 
 if not DEBUG:

@@ -92,7 +92,7 @@ button {
   opacity: 1;
 }
 
-#tab-graphs, #tab-stats, #tab-chat {
+#tab-graphs, #tab-stats, #tab-chat, #tab-plan {
   padding: 10px 0;
 }
 
@@ -163,15 +163,29 @@ button {
 
 
 
-.chat-box {
+.tab-box {
   padding: 10px;
   border-radius: 5px;
-  overflow-y: auto;
+  border: 0.5px solid var(--border-color);
+  height: 80vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 80vh;
+}
+
+.bordered-block {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
   border: 0.5px solid var(--border-color);
+}
+
+.bordered-block p {
+  margin: 0 0 5px;
+}
+
+.chat-box {
+  overflow-y: auto;
+  justify-content: space-between;
 }
 
 .chat-messages {
@@ -193,17 +207,9 @@ button {
 }
 
 .chat-message {
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 5px;
   max-width: 100%;
   display: flex;
   align-items: flex-start;
-  border: 0.5px solid var(--border-color);
-}
-
-.chat-message p {
-  margin: 0 0 5px;
 }
 
 .chat-thinking {
@@ -246,6 +252,48 @@ button {
   }
 
 
+}
+
+.plan-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.plan-status:empty {
+  display: none;
+}
+
+.plan-status {
+  font-style: italic;
+  opacity: 0.6;
+}
+
+.plan-calendar-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plan-calendar-link code {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.6;
+}
+
+.plan-calendar-link button {
+  white-space: nowrap;
+  padding: 4px 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.plan-hint {
+  opacity: 0.6;
+  margin-bottom: 10px;
 }
 
 @media (prefers-color-scheme: dark) {

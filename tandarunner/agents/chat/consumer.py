@@ -14,8 +14,8 @@ from pydantic_ai import (
 )
 from pydantic_ai.messages import ModelMessage
 
-from tandarunner.chat_agent.agent import agent
-from tandarunner.chat_agent.tools import build_chat_deps, close_chat_deps
+from tandarunner.agents.chat.agent import agent
+from tandarunner.agents.deps import build_deps, close_deps
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         athlete_name = self.session.get("athlete", {}).get("firstname", "")
-        deps = build_chat_deps(
+        deps = build_deps(
             running_activities_json=running_activities_json,
             athlete_name=athlete_name,
         )
@@ -179,7 +179,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             self.message_history.extend(run.result.new_messages())
         finally:
-            close_chat_deps(deps=deps)
+            close_deps(deps=deps)
 
     async def _create_bubble(
         self, prefix: str = "", css_class: str = ""

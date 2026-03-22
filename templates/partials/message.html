@@ -1,7 +1,7 @@
 {% load static %}
 {% load markdown_extras %}
-<div class="chat-messages" id="message-list" hx-swap-oob="beforeend">
-    <div class="chat-message">
+<div class="chat-messages" id="{{ message_list_id|default:'message-list' }}" hx-swap-oob="beforeend">
+    <div class="bordered-block chat-message">
         {% if is_system %}
             <img src="{% static 'icons/robot-face.png' %}" class="logo">
         {% else %}

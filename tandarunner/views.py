@@ -1,10 +1,14 @@
 import logging
+from datetime import date
 
 from django.http import HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_http_methods
+from icalendar import Calendar, Event
 
 from tandarunner.helpers import get_access_token, get_athlete
+from tandarunner.models import TrainingPlan
 from tandarunner.visualizations import (
     get_dummy_visualizations,
     get_stats,
@@ -97,3 +101,33 @@ def stats_partial(request: HttpRequest) -> HttpResponse:
 @require_http_methods(["GET"])
 def chat_partial(request: HttpRequest) -> HttpResponse:
     return TemplateResponse(request, "partials/chat.html")
+
+
+@require_http_methods(["GET"])
+def plan_partial(request: HttpRequest) -> HttpResponse:
+    return TemplateResponse(request, "partials/plan.html")
+
+
+@require_http_methods(["GET"])
+def plan_calendar(request: HttpRequest, plan_id: str) -> HttpResponse:
+    plan = get_object_or_404(TrainingPlan, id=plan_id)
+
+    cal = Calendar()
+    cal.add("prodid", "-//Tanda Runner Training Plan//tandarunner//")
+    cal.add("version", "2.0")
+    cal.add("x-wr-calname", plan.name)
+
+    for session in plan.sessions:
+        event = Event()
+        event.add("summary", f"🏃 {session['title']}")
+        category = session.get("category", "")
+        event.add("description", f"[{category}] {session['description']}")
+        event.add("dtstart", date.fromisoformat(session["date"]))
+        cal.add_component(event)
+
+    response = HttpResponse(
+        cal.to_ical(),
+        content_type="text/calendar; charset=utf-8",
+    )
+    response["Content-Disposition"] = f'attachment; filename="{plan.name}.ics"'
+    return response

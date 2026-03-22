@@ -69,6 +69,8 @@
                         onclick="switchTab('stats', this)">STATS</button>
                 <button class="tab"
                         onclick="switchTab('chat', this)">CHAT</button>
+                <button class="tab"
+                        onclick="switchTab('plan', this)">PLAN</button>
             </div>
             <div id="tab-graphs"
                  hx-get="{% url 'graphs_partial' %}"
@@ -83,6 +85,11 @@
             </div>
             <div id="tab-chat" class="tab-pane-hidden"
                  hx-get="{% url 'chat_partial' %}"
+                 hx-trigger="load"
+                 hx-swap="innerHTML">
+            </div>
+            <div id="tab-plan" class="tab-pane-hidden"
+                 hx-get="{% url 'plan_partial' %}"
                  hx-trigger="load"
                  hx-swap="innerHTML">
             </div>
