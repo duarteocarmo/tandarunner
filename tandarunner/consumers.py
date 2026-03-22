@@ -177,7 +177,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         text=response_text,
                     )
 
-            self.message_history = run.result.new_messages()
+            self.message_history.extend(run.result.new_messages())
         finally:
             close_chat_deps(deps=deps)
 
