@@ -129,5 +129,8 @@ def plan_calendar(request: HttpRequest, plan_id: str) -> HttpResponse:
         cal.to_ical(),
         content_type="text/calendar; charset=utf-8",
     )
-    response["Content-Disposition"] = f'attachment; filename="{plan.name}.ics"'
+    if "download" in request.GET:
+        response["Content-Disposition"] = (
+            f'attachment; filename="{plan.name}.ics"'
+        )
     return response
