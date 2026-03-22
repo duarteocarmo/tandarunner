@@ -17,6 +17,7 @@ COPY . /app
 RUN uv run python manage.py makemigrations --merge
 RUN uv run python manage.py migrate --noinput
 RUN uv run python manage.py collectstatic --noinput
+RUN rm -rf /var/tmp/django_cache
 
 ENTRYPOINT ["uv", "run", "python3"]
 
