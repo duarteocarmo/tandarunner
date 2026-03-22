@@ -117,18 +117,36 @@ class PlanConsumer(AsyncWebsocketConsumer):
                             calendar_url = (
                                 f"{origin}/plan/{plan.id}/calendar.ics"
                             )
+                            sessions_by_week = self._group_sessions_by_week(
+                                output.sessions
+                            )
                             await self._send_html(
                                 "partials/plan_result.html",
                                 {
                                     "coach_message": output.coach_message,
                                     "achievability": output.achievability,
                                     "calendar_url": calendar_url,
+                                    "sessions_by_week": sessions_by_week,
                                 },
                             )
 
             self.message_history.extend(run.result.new_messages())
         finally:
             close_deps(deps=deps)
+
+    @staticmethod
+    def _group_sessions_by_week(sessions: list) -> list[dict]:
+        from itertools import groupby
+
+        grouped = []
+        for week_num, week_sessions in groupby(
+            sessions, key=lambda s: s.date.isocalendar()[1]
+        ):
+            items = list(week_sessions)
+            start = items[0].date.strftime("%b %d")
+            end = items[-1].date.strftime("%b %d")
+            grouped.append({"label": f"{start} - {end}", "sessions": items})
+        return grouped
 
     @sync_to_async
     def _save_plan(self, *, result: TrainingPlanResult) -> TrainingPlan:

@@ -15,3 +15,9 @@ def markdown(value):
             "markdown.extensions.tables",
         ],
     )
+
+
+@register.filter()
+@stringfilter
+def snake_to_words(value):
+    return value.replace("_", " ")

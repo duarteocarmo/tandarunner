@@ -30,6 +30,15 @@ class VisualizationResults(TypedDict):
 
 DAYS_BACK = 180
 TOTAL_DAYS_BACK = 1095  # 3 years
+MIN_DISPLAY_WEEKS = 12
+
+
+def padded_time_domain(index) -> list[str]:
+    """Return [start, end] ISO strings ensuring at least MIN_DISPLAY_WEEKS of range."""
+    data_end = index.max()
+    desired_start = data_end - timedelta(weeks=MIN_DISPLAY_WEEKS)
+    start = min(index.min(), desired_start)
+    return [start.isoformat(), data_end.isoformat()]
 
 
 def get_athlete(access_token) -> dict:
@@ -220,9 +229,16 @@ def prepare_data(access_token: str, athlete_id: int) -> tuple:
 def viz_weekly_chart(
     weekly_data: pandas.DataFrame,
 ) -> dict:
-    upper_limit = weekly_data["distance_km"].max()
+    upper_limit = max(weekly_data["distance_km"].max(), 20)
 
-    x = alt.X("start_date:T", scale=alt.Scale(padding=20), title="Week")
+    x = alt.X(
+        "start_date:T",
+        scale=alt.Scale(
+            domain=padded_time_domain(weekly_data.index), padding=20
+        ),
+        axis=alt.Axis(format="%b %d", tickCount="week"),
+        title="Week",
+    )
     y = alt.Y(
         "distance_km:Q",
         axis=alt.Axis(title="Kilometers"),
@@ -284,7 +300,12 @@ def viz_weekly_chart(
 
 
 def viz_rolling_tanda(daily_df: pandas.DataFrame) -> dict:
-    x = alt.X("date:T", title="Date", scale=alt.Scale(padding=20))
+    x = alt.X(
+        "date:T",
+        title="Date",
+        scale=alt.Scale(domain=padded_time_domain(daily_df.index), padding=20),
+        axis=alt.Axis(format="%b %d"),
+    )
     color = "#d65de0"
 
     daily_line = (
@@ -339,9 +360,8 @@ def running_heatmap(daily_df: pandas.DataFrame) -> dict:
         ]
     ].copy()
 
-    all_days = pandas.date_range(
-        heatmap_data.index.min(), heatmap_data.index.max(), freq="D"
-    )
+    domain = padded_time_domain(heatmap_data.index)
+    all_days = pandas.date_range(domain[0], domain[1], freq="D")
     heatmap_data = heatmap_data.reindex(all_days).fillna(0.0)
     heatmap_data["day_of_the_week_name"] = heatmap_data.index.strftime("%a")
     heatmap_data["week_start"] = heatmap_data.index - pandas.to_timedelta(

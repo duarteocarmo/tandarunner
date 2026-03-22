@@ -5,8 +5,42 @@
         <div class="plan-achievability plan-achievability--{{ achievability }}">{{ achievability }}</div>
         {{ coach_message|markdown|safe }}
     </div>
-    <div class="bordered-block plan-calendar-link">
-        <code id="plan-calendar-url">{{ calendar_url }}</code>
-        <button onclick="navigator.clipboard.writeText(document.getElementById('plan-calendar-url').textContent)">Copy link</button>
+
+    <div class="bordered-block plan-preview">
+        <details open>
+            <summary class="plan-preview-toggle">Plan preview</summary>
+            <div class="plan-weeks">
+                {% for week in sessions_by_week %}
+                <div class="plan-week">
+                    <div class="plan-week-label">{{ week.label }}</div>
+                    {% for session in week.sessions %}
+                    <div class="plan-session">
+                        <span class="plan-session-date">{{ session.date|date:"D d" }}</span>
+                        <span class="plan-session-category plan-session-category--{{ session.category }}">{{ session.category.value|snake_to_words }}</span>
+                        <span class="plan-session-title">{{ session.title }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </details>
+    </div>
+
+    <div class="bordered-block plan-subscribe">
+        <div class="plan-subscribe-label">Add to your calendar</div>
+        <div class="plan-subscribe-actions">
+            <a href="https://calendar.google.com/calendar/r?cid={{ calendar_url|urlencode }}" target="_blank" rel="noopener" class="plan-subscribe-btn">Google Calendar</a>
+            <a href="{{ calendar_url }}" target="_blank" rel="noopener" class="plan-subscribe-btn" id="plan-apple-btn">Apple Calendar</a>
+            <button class="plan-subscribe-btn" onclick="navigator.clipboard.writeText(document.getElementById('plan-calendar-url').textContent).then(function(){ var b=event.target; b.textContent='Copied'; setTimeout(function(){ b.textContent='Copy link'; }, 1500); })">Copy link</button>
+        </div>
+        <code id="plan-calendar-url" class="plan-raw-url">{{ calendar_url }}</code>
     </div>
 </div>
+<script>
+(function() {
+    var appleBtn = document.getElementById("plan-apple-btn");
+    if (appleBtn) {
+        appleBtn.href = appleBtn.href.replace(/^https?:\/\//, "webcal://");
+    }
+})();
+</script>

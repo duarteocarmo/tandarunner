@@ -11,6 +11,7 @@ class SessionCategory(StrEnum):
     intervals = "intervals"
     long_run = "long_run"
     recovery = "recovery"
+    race = "race"
 
 
 class Session(BaseModel):

@@ -1,5 +1,12 @@
 <div class="tab-box" hx-ext="ws" ws-connect="/ws/plan/">
-    <p class="plan-hint">Enter your goal. An agent will design your plan and give you a calendar link to <a href="https://calendar.google.com/calendar/u/0/r/settings/addbyurl" target="_blank" rel="noopener">subscribe to</a>.</p>
+    <div class="plan-hint">
+        <p><strong>How this works</strong></p>
+        <ol>
+            <li>The agent has access to all your training data.</li>
+            <li>Your describe a goal and preferences (race, race date, target time, preferred long run day, etc.)</li>
+            <li>You get a plan you can add straight to your calendar</li>
+        </ol>
+    </div>
     <form id="plan-form"
           ws-send
           hx-trigger="click from:#plan-submit">

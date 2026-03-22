@@ -285,30 +285,127 @@ button {
 .plan-achievability--realistic { color: #f57f17; border-color: #f57f17; }
 .plan-achievability--stretch { color: #c62828; border-color: #c62828; }
 
-.plan-calendar-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
-.plan-calendar-link code {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  opacity: 0.6;
-}
-
-.plan-calendar-link button {
-  white-space: nowrap;
-  padding: 4px 12px;
-  font-family: inherit;
-  cursor: pointer;
-}
 
 .plan-hint {
   opacity: 0.6;
   margin-bottom: 10px;
+}
+
+.plan-hint ol {
+  margin: 4px 0 0;
+  padding-left: 20px;
+}
+
+.plan-hint li {
+  margin-bottom: 2px;
+}
+
+.plan-preview-toggle {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.plan-weeks {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plan-week-label {
+  font-weight: 600;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.5;
+  margin-bottom: 4px;
+}
+
+.plan-session {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85em;
+  padding: 2px 0;
+}
+
+.plan-session-date {
+  flex-shrink: 0;
+  width: 48px;
+  opacity: 0.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.plan-session-category {
+  flex-shrink: 0;
+  font-size: 0.75em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border: 1px solid;
+  border-radius: 2px;
+  width: 80px;
+  text-align: center;
+}
+
+.plan-session-category--easy_run { color: #2e7d32; border-color: #2e7d32; }
+.plan-session-category--tempo { color: #f57f17; border-color: #f57f17; }
+.plan-session-category--intervals { color: #c62828; border-color: #c62828; }
+.plan-session-category--long_run { color: #1565c0; border-color: #1565c0; }
+.plan-session-category--recovery { color: #6a1b9a; border-color: #6a1b9a; }
+.plan-session-category--race { color: #ff6f00; border-color: #ff6f00; background: #ff6f00; color: #fff; font-weight: 700; }
+
+.plan-session-title {
+  flex: 1;
+}
+
+.plan-subscribe {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.plan-subscribe-label {
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.plan-subscribe-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.plan-subscribe-btn {
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 0.85em;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  background: none;
+  color: inherit;
+}
+
+.plan-subscribe-btn:hover {
+  opacity: 0.7;
+}
+
+.plan-raw-url {
+  font-size: 0.75em;
+  opacity: 0.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 @media (prefers-color-scheme: dark) {
