@@ -16,14 +16,17 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ChatAgentDeps:
     connection: duckdb.DuckDBPyConnection
+    athlete_name: str = ""
     query_lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
 
-def build_chat_deps(*, running_activities_json: str) -> ChatAgentDeps:
+def build_chat_deps(
+    *, running_activities_json: str, athlete_name: str = ""
+) -> ChatAgentDeps:
     connection = duckdb.connect(database=":memory:")
     running_activities = pandas.read_json(StringIO(running_activities_json))
     connection.register(view_name=VIEW_NAME, python_object=running_activities)
-    return ChatAgentDeps(connection=connection)
+    return ChatAgentDeps(connection=connection, athlete_name=athlete_name)
 
 
 def close_chat_deps(*, deps: ChatAgentDeps) -> None:

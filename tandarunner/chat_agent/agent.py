@@ -27,6 +27,13 @@ agent = Agent(
 
 
 @agent.system_prompt
+def add_athlete_name(ctx: RunContext[ChatAgentDeps]) -> str:
+    if ctx.deps.athlete_name:
+        return f"The athlete's name is {ctx.deps.athlete_name}."
+    return ""
+
+
+@agent.system_prompt
 def add_current_time() -> str:
     now = datetime.now().astimezone()
     return f"Current date and time: {now.strftime('%Y-%m-%d %H:%M %Z')}"

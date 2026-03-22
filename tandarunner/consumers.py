@@ -25,15 +25,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.message_history: list[ModelMessage] = []
         self.user = self.scope["user"]
         self.session = await sync_to_async(self.scope["session"].load)()
-        self.system_context = self._build_system_context()
         await super().connect()
         await self._send_welcome_message()
-
-    def _build_system_context(self) -> str:
-        athlete_name = self.session.get("athlete", {}).get("firstname", "")
-        if athlete_name:
-            return f"\n\nThe athlete's name is {athlete_name}."
-        return ""
 
     async def receive(self, text_data: str = None, bytes_data: str = None):  # type: ignore[override]
         text_data_json = json.loads(text_data)
@@ -71,18 +64,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def _generate_ai_response(self, user_message: str):
-        prompt = (
-            f"{self.system_context}\n\n{user_message}"
-            if self.system_context and not self.message_history
-            else user_message
-        )
+        prompt = user_message
 
         running_activities_json = self.session.get("running_activities")
         if not running_activities_json:
             logger.warning("Chat attempted before data was loaded.")
             return
 
-        deps = build_chat_deps(running_activities_json=running_activities_json)
+        athlete_name = self.session.get("athlete", {}).get("firstname", "")
+        deps = build_chat_deps(
+            running_activities_json=running_activities_json,
+            athlete_name=athlete_name,
+        )
 
         thinking_text = ""
         response_text = ""
