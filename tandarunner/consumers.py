@@ -66,9 +66,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def _generate_ai_response(self, user_message: str):
         prompt = user_message
 
+        self.session = await sync_to_async(self.scope["session"].load)()
         running_activities_json = self.session.get("running_activities")
         if not running_activities_json:
             logger.warning("Chat attempted before data was loaded.")
+            bubble_id = await self._create_bubble(
+                prefix="Your data is still loading, please try again in a moment!"
+            )
+            await self._finalize_bubble(
+                bubble_id=bubble_id,
+                text="Your data is still loading, please try again in a moment!",
+            )
             return
 
         athlete_name = self.session.get("athlete", {}).get("firstname", "")
