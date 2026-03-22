@@ -61,6 +61,34 @@ window
     }
   });
 
+// auto-resize chat textarea
+document.addEventListener("htmx:afterSettle", function (event) {
+  if (event.detail.target.id === "tab-chat") {
+    const textareaEle = document.getElementById("messageinput");
+    if (textareaEle) {
+      textareaEle.addEventListener("input", () => {
+        textareaEle.style.height = "auto";
+        textareaEle.style.height = textareaEle.scrollHeight + "px";
+      });
+    }
+  }
+});
+
+// enable chat once graph data is loaded
+document.addEventListener("htmx:afterSettle", function (event) {
+  if (event.detail.target.id === "tab-graphs") {
+    const textareaEle = document.getElementById("messageinput");
+    const sendButton = document.getElementById("sendMessage");
+    if (textareaEle) {
+      textareaEle.placeholder = "Say something...";
+      textareaEle.disabled = false;
+    }
+    if (sendButton) {
+      sendButton.disabled = false;
+    }
+  }
+});
+
 // after sending message, clear input box and reset height
 document.addEventListener("htmx:wsAfterSend", function () {
   document.getElementById("messageinput").value = "";

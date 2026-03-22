@@ -77,7 +77,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             else user_message
         )
 
-        running_activities_json = self.session["running_activities"]
+        running_activities_json = self.session.get("running_activities")
+        if not running_activities_json:
+            logger.warning("Chat attempted before data was loaded.")
+            return
+
         deps = build_chat_deps(running_activities_json=running_activities_json)
 
         thinking_text = ""
