@@ -1,0 +1,108 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Strava Training Plan//tandarunner//
+X-WR-CALNAME:Sub-1:30 Half Marathon Plan
+BEGIN:VEVENT
+SUMMARY:🏃 Easy Recovery Run
+DTSTART;VALUE=DATE:20260322
+DESCRIPTION:[recovery] 5-6km at 5:30-5:45/km. Very easy pace to recover fr
+ om your 3-day running streak. Keep heart rate under 140. Optional — take
+  full rest if feeling fatigued.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Tempo Run
+DTSTART;VALUE=DATE:20260324
+DESCRIPTION:[tempo] 8km total: 2km warm-up at 5:30/km\, 4km tempo at 4:20/
+ km (slightly faster than goal pace)\, 2km cool-down at 5:30/km. Focus on c
+ ontrolled effort — should feel 'comfortably hard'.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Easy Run
+DTSTART;VALUE=DATE:20260325
+DESCRIPTION:[easy_run] 7-8km at 5:20-5:35/km. Relaxed pace\, focus on good
+  form. Use this as active recovery between harder sessions.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Long Run - Aerobic Base
+DTSTART;VALUE=DATE:20260328
+DESCRIPTION:[long_run] 15km at 5:15-5:30/km. Steady\, conversational pace.
+  This builds endurance without adding fatigue. Stay relaxed throughout.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Easy Run
+DTSTART;VALUE=DATE:20260329
+DESCRIPTION:[easy_run] 6km at 5:30-5:45/km. Light shakeout to start the we
+ ek. Keep it very easy.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Interval Session
+DTSTART;VALUE=DATE:20260331
+DESCRIPTION:[intervals] 5 x 1.2km (approx 5 mins) at 4:00-4:05/km with 2:0
+ 0 jog recovery between reps. Include 2km warm-up and 2km cool-down. Total 
+ ~11km. This develops speed reserve for race day.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Easy Run
+DTSTART;VALUE=DATE:20260401
+DESCRIPTION:[easy_run] 7km at 5:20-5:35/km. Recovery run after intervals. 
+ Stay relaxed.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Long Run with Goal Pace
+DTSTART;VALUE=DATE:20260404
+DESCRIPTION:[long_run] 17km total: 4km warm-up at 5:30/km\, 8km at 4:20/km
+  (goal pace effort)\, 5km cool-down at 5:30/km. Key session — practice h
+ olding race pace when slightly fatigued.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Easy Recovery
+DTSTART;VALUE=DATE:20260405
+DESCRIPTION:[recovery] 6km at 5:30-5:45/km. Flush out yesterday's long run
+ . Very easy effort.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Tempo at Goal Pace
+DTSTART;VALUE=DATE:20260407
+DESCRIPTION:[tempo] 10km total: 2km warm-up\, 5km at 4:10-4:15/km (slightl
+ y faster than race pace)\, 3km cool-down. This is your key fitness test 
+ — should feel challenging but controlled.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Easy Run
+DTSTART;VALUE=DATE:20260408
+DESCRIPTION:[easy_run] 7km at 5:20-5:40/km. Recovery day. Focus on staying
+  relaxed.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Long Run - Race Simulation
+DTSTART;VALUE=DATE:20260411
+DESCRIPTION:[long_run] 16km total: 3km warm-up at 5:30/km\, 10km at 4:15/k
+ m (exact goal pace)\, 3km cool-down. This is your dress rehearsal — prac
+ tice race-day nutrition and mental focus.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Easy Recovery
+DTSTART;VALUE=DATE:20260412
+DESCRIPTION:[recovery] 8km at 5:30-5:45/km. Beginning of taper. Keep it ea
+ sy and enjoy the reduced volume.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Short Tempo - Sharpening
+DTSTART;VALUE=DATE:20260414
+DESCRIPTION:[tempo] 6km total: 2km warm-up\, 2km at 4:10/km\, 2km cool-dow
+ n. Just enough to keep legs sharp without adding fatigue.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Easy Run
+DTSTART;VALUE=DATE:20260415
+DESCRIPTION:[easy_run] 5km at 5:30-5:45/km. Very relaxed. Visualize race d
+ ay success.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🏃 Pre-Race Shakeout
+DTSTART;VALUE=DATE:20260418
+DESCRIPTION:[easy_run] 4km easy at 5:45/km + 4 x 30-second strides at 4:00
+ /km pace with 60s walk recovery. Wake up the legs without tiring them. Res
+ t the remainder of the day.
+END:VEVENT
+END:VCALENDAR

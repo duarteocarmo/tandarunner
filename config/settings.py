@@ -197,7 +197,7 @@ YEARS_OF_HISTORY = 3
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 AGENT_CONFIG = {
     "model": "openrouter:z-ai/g1m-5",
-    "fallback_model": "openrouter:openai/gpt-54-nano",
+    "fallback_model": "openrouter:openai/gpt-5.4-nano",
     "temperature": 0.0,
     "max_result_rows": 50,
     "max_result_cols": 20,
