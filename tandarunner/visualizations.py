@@ -800,7 +800,11 @@ def get_visualizations(
         "marathon_predictor": marathon_predictor(daily_df=daily_df),
         "running_heatmap": running_heatmap(daily_df=daily_df),
         "cumulative_yearly": viz_cumulative_yearly_distance(all_activities),
-        "running_activities": clean_df(running_activities).to_json(),
+        "running_activities": clean_df(
+            pandas.DataFrame(
+                [act for act in all_activities if act["type"] == "Run"]
+            )
+        ).to_json(),
         "current_tanda": current_tanda,
         "current_tanda_pace": current_tanda_pace,
         "avg_hr_per_km": avg_hr_per_km,

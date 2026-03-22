@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.conf import settings
 from pydantic_ai import Agent, RunContext
+from pydantic_ai.models.fallback import FallbackModel
 from pydantic_ai.models.openrouter import OpenRouterModelSettings
 
 from tandarunner.chat_agent.prompts import REFERENCE_QUERIES, SYSTEM_PROMPT
@@ -10,8 +11,13 @@ from tandarunner.chat_agent.tools import ChatAgentDeps, register_chat_tools
 if settings.OPENROUTER_API_KEY is None:
     raise ValueError("OPENROUTER_API_KEY is not set")
 
+fallback_model = FallbackModel(
+    settings.AGENT_CONFIG["model"],
+    settings.AGENT_CONFIG["fallback_model"],
+)
+
 agent = Agent(
-    model=settings.AGENT_CONFIG["model"],
+    model=fallback_model,
     system_prompt=SYSTEM_PROMPT,
     deps_type=ChatAgentDeps,
     model_settings=OpenRouterModelSettings(
