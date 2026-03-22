@@ -29,7 +29,7 @@
     <div class="bordered-block plan-subscribe">
         <div class="plan-subscribe-label">Add to your calendar</div>
         <div class="plan-subscribe-actions">
-            <a href="https://calendar.google.com/calendar/r?cid={{ calendar_url|urlencode }}" target="_blank" rel="noopener" class="plan-subscribe-btn">Google Calendar</a>
+            <button class="plan-subscribe-btn" onclick="navigator.clipboard.writeText(document.getElementById('plan-calendar-url').textContent).then(function(){ alert('Calendar URL copied! Paste it in the URL of calendar field.'); window.open('https://calendar.google.com/calendar/u/0/r/settings/addbyurl', '_blank'); })">Google Calendar</button>
             <a href="{{ calendar_url }}" target="_blank" rel="noopener" class="plan-subscribe-btn" id="plan-apple-btn">Apple Calendar</a>
             <button class="plan-subscribe-btn" onclick="navigator.clipboard.writeText(document.getElementById('plan-calendar-url').textContent).then(function(){ var b=event.target; b.textContent='Copied'; setTimeout(function(){ b.textContent='Copy link'; }, 1500); })">Copy link</button>
         </div>
