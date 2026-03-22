@@ -73,6 +73,7 @@ class PlanConsumer(AsyncWebsocketConsumer):
             ) as run:
                 async for node in run:
                     if agent.is_model_request_node(node):
+                        thinking_text = ""
                         async with node.stream(run.ctx) as request_stream:
                             async for event in request_stream:
                                 if isinstance(
@@ -80,7 +81,9 @@ class PlanConsumer(AsyncWebsocketConsumer):
                                 ) and isinstance(
                                     event.delta, ThinkingPartDelta
                                 ):
-                                    await self._send_status("Thinking...")
+                                    thinking_text += event.delta.content_delta
+                                    truncated = thinking_text[-200:]
+                                    await self._send_status(truncated)
 
                     elif agent.is_call_tools_node(node):
                         async with node.stream(run.ctx) as tool_stream:
@@ -118,6 +121,7 @@ class PlanConsumer(AsyncWebsocketConsumer):
                                 "partials/plan_result.html",
                                 {
                                     "coach_message": output.coach_message,
+                                    "achievability": output.achievability,
                                     "calendar_url": calendar_url,
                                 },
                             )
@@ -133,9 +137,8 @@ class PlanConsumer(AsyncWebsocketConsumer):
             user=self.user,
             defaults={
                 "name": result.name,
-                "goal": result.goal,
+                "achievability": result.achievability,
                 "coach_message": result.coach_message,
-                "goal_date": result.goal_date,
                 "sessions": sessions_data,
             },
         )

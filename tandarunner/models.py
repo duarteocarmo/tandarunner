@@ -12,9 +12,8 @@ class TrainingPlan(models.Model):
         related_name="training_plan",
     )
     name = models.CharField(max_length=255)
-    goal = models.TextField()
+    achievability = models.CharField(max_length=20, blank=True, default="")
     coach_message = models.TextField(blank=True, default="")
-    goal_date = models.DateField(null=True, blank=True)
     sessions = models.JSONField(default=list)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1,7 +1,8 @@
 from datetime import date
 from enum import StrEnum
+from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SessionCategory(StrEnum):
@@ -20,8 +21,13 @@ class Session(BaseModel):
 
 
 class TrainingPlanResult(BaseModel):
-    name: str
-    goal: str
-    goal_date: date
-    coach_message: str
+    name: str = Field(
+        description="Calendar name, format: 'Athlete Name: Goal (DD/MM/YYYY)'"
+    )
+    achievability: Literal["stretch", "realistic", "conservative"] = Field(
+        description="How achievable this plan is given the athlete's current fitness"
+    )
+    coach_message: str = Field(
+        description="Markdown-formatted message explaining reasoning, plan structure, and progression toward the goal"
+    )
     sessions: list[Session]

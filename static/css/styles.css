@@ -270,6 +270,21 @@ button {
   opacity: 0.6;
 }
 
+.plan-achievability {
+  display: inline-block;
+  font-size: 0.8em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  margin-bottom: 8px;
+  border: 1px solid;
+}
+
+.plan-achievability--conservative { color: #2e7d32; border-color: #2e7d32; }
+.plan-achievability--realistic { color: #f57f17; border-color: #f57f17; }
+.plan-achievability--stretch { color: #c62828; border-color: #c62828; }
+
 .plan-calendar-link {
   display: flex;
   align-items: center;

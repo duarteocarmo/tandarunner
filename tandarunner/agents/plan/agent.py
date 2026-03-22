@@ -2,8 +2,10 @@ from datetime import datetime
 
 from django.conf import settings
 from pydantic_ai import Agent, RunContext
-from pydantic_ai.models.fallback import FallbackModel
-from pydantic_ai.models.openrouter import OpenRouterModelSettings
+from pydantic_ai.models.openrouter import (
+    OpenRouterModelSettings,
+    OpenRouterReasoning,
+)
 
 from tandarunner.agents.deps import AgentDeps
 from tandarunner.agents.plan.prompts import REFERENCE_QUERIES, SYSTEM_PROMPT
@@ -13,18 +15,16 @@ from tandarunner.agents.tools import register_calendar_tool, register_sql_tool
 if settings.OPENROUTER_API_KEY is None:
     raise ValueError("OPENROUTER_API_KEY is not set")
 
-fallback_model = FallbackModel(
-    settings.PLAN_AGENT_CONFIG["model"],
-    settings.PLAN_AGENT_CONFIG["fallback_model"],
-)
-
 agent = Agent(
-    model=fallback_model,
+    model=settings.PLAN_AGENT_CONFIG["model"],
     system_prompt=SYSTEM_PROMPT,
     output_type=TrainingPlanResult,
     deps_type=AgentDeps,
     model_settings=OpenRouterModelSettings(
         temperature=settings.PLAN_AGENT_CONFIG["temperature"],
+        openrouter_reasoning=OpenRouterReasoning(
+            effort=settings.PLAN_AGENT_CONFIG["reasoning_effort"],
+        ),
     ),
 )
 

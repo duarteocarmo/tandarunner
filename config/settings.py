@@ -205,8 +205,8 @@ AGENT_CONFIG = {
 
 PLAN_AGENT_CONFIG = {
     "model": "openrouter:google/gemini-3-flash-preview",
-    "fallback_model": "openrouter:qwen/qwen3.5-122b-a10b",
     "temperature": 0.0,
+    "reasoning_effort": "medium",
     "max_result_rows": 50,
     "max_result_cols": 20,
 }

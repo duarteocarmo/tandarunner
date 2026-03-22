@@ -1,7 +1,10 @@
 {% load markdown_extras %}
 <div id="plan-status" class="bordered-block plan-status" hx-swap-oob="outerHTML"></div>
 <div id="plan-result" hx-swap-oob="innerHTML">
-    <div class="bordered-block">{{ coach_message|markdown|safe }}</div>
+    <div class="bordered-block">
+        <div class="plan-achievability plan-achievability--{{ achievability }}">{{ achievability }}</div>
+        {{ coach_message|markdown|safe }}
+    </div>
     <div class="bordered-block plan-calendar-link">
         <code id="plan-calendar-url">{{ calendar_url }}</code>
         <button onclick="navigator.clipboard.writeText(document.getElementById('plan-calendar-url').textContent)">Copy link</button>

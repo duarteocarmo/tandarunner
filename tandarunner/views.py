@@ -113,13 +113,13 @@ def plan_calendar(request: HttpRequest, plan_id: str) -> HttpResponse:
     plan = get_object_or_404(TrainingPlan, id=plan_id)
 
     cal = Calendar()
-    cal.add("prodid", "-//Tanda Runner Training Plan//tandarunner//")
+    cal.add("prodid", "-//Tanda Runner//tandarunner//")
     cal.add("version", "2.0")
     cal.add("x-wr-calname", plan.name)
 
     for session in plan.sessions:
         event = Event()
-        event.add("summary", f"🏃 {session['title']}")
+        event.add("summary", session["title"])
         category = session.get("category", "")
         event.add("description", f"[{category}] {session['description']}")
         event.add("dtstart", date.fromisoformat(session["date"]))
