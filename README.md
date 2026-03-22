@@ -2,6 +2,8 @@
 
 An opinionated running dashboard.
 
+![Tanda Runner](images/screenshot.png)
+
 ## Development
 
 This project uses [uv](https://docs.astral.sh/uv/) for dependency management.
