@@ -106,7 +106,16 @@ document.addEventListener("htmx:wsAfterSend", function () {
     chatInput.value = "";
     chatInput.style.height = "auto";
   }
+  var examples = document.getElementById("chat-examples");
+  if (examples) examples.remove();
 });
+
+function sendExample(message) {
+  var input = document.getElementById("messageinput");
+  if (!input || input.disabled) return;
+  input.value = message;
+  document.getElementById("sendMessage").click();
+}
 
 // scroll to bottom of chat after receiving a message
 document.addEventListener("htmx:wsAfterMessage", function () {

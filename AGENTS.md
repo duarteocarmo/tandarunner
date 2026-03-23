@@ -2,3 +2,8 @@
 - If you take screenshots, clean up after yourself after
 - When done changing things. Run make format and make lint
 - No emojis anywhere in the project (UI, code, prompts, calendar events, etc.)
+- Imports always at the top of the file, never inline or inside functions
+- Edit static assets (JS, CSS) in `static/`, not `staticfiles/` -- the latter is compiled at runtime
+- Keep things stupid simple where possible
+- DRY, but a little repetition is fine if simpler
+- Adhere to htmx and django best practices (https://htmx.org/reference/, https://docs.djangoproject.com/en/6.0/)

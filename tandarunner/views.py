@@ -1,6 +1,7 @@
 import logging
 from datetime import date
 
+from django.conf import settings
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
@@ -85,7 +86,11 @@ def stats_partial(request: HttpRequest) -> HttpResponse:
 
 @require_http_methods(["GET"])
 def chat_partial(request: HttpRequest) -> HttpResponse:
-    return TemplateResponse(request, "partials/chat.html")
+    return TemplateResponse(
+        request,
+        "partials/chat.html",
+        {"chat_examples": settings.CHAT_EXAMPLES},
+    )
 
 
 @require_http_methods(["GET"])

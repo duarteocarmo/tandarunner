@@ -45,6 +45,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self._generate_ai_response(message_text)
 
     async def _send_welcome_message(self):
+        clear_html = '<div class="chat-messages" id="message-list" hx-swap-oob="outerHTML"></div>'
+        await self.send(text_data=clear_html)
+
         if self.user.is_anonymous:
             welcome = "Please login to receive personalized advice from your running coach!"
         else:

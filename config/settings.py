@@ -191,6 +191,11 @@ STRAVA_BASE_URL = "https://www.strava.com/api/v3"
 DUARTE_ATHLETE_ID = 44717295
 DAYS_PER_YEAR = 365
 YEARS_OF_HISTORY = 3
+CHAT_EXAMPLES = [
+    "Analyze my past 2 weeks of training",
+    "What am I doing wrong in my training?",
+    "What's my average pace for the past 2 weeks?",
+]
 
 # AI agent
 

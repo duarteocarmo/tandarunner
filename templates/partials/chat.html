@@ -3,6 +3,11 @@
         <form id="form"
               ws-send
               hx-trigger="keyup[key=='Enter'&&!shiftKey], click from:#sendMessage, click from:#resetChat">
+                <div class="chat-examples" id="chat-examples">
+                        {% for example in chat_examples %}
+                        <button type="button" class="chat-example" data-message="{{ example }}" onclick="sendExample(this.dataset.message)">{{ example }}</button>
+                        {% endfor %}
+                </div>
                 <div>
                         <textarea name="message"
                                   placeholder="Loading your data..."
