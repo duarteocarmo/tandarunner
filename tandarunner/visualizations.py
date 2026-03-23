@@ -29,7 +29,6 @@ class VisualizationResults(TypedDict):
 
 
 DAYS_BACK = 180
-TOTAL_DAYS_BACK = 1095  # 3 years
 MIN_DISPLAY_WEEKS = 12
 
 
@@ -39,19 +38,6 @@ def padded_time_domain(index) -> list[str]:
     desired_start = data_end - timedelta(weeks=MIN_DISPLAY_WEEKS)
     start = min(index.min(), desired_start)
     return [start.isoformat(), data_end.isoformat()]
-
-
-def get_athlete(access_token) -> dict:
-    url = f"{settings.STRAVA_BASE_URL}/athlete"
-    headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(url, headers=headers)
-
-    if response.status_code != 200:
-        raise Exception(
-            f"There was an error requesting: {response.status_code}"
-        )
-
-    return response.json()
 
 
 def get_stats(
@@ -124,8 +110,7 @@ def pace_tick_formatter(value):
     return f"{minutes}:{seconds:02d}"
 
 
-def prepare_data(access_token: str, athlete_id: int) -> tuple:
-    all_activities = fetch_all_activities(access_token, athlete_id=athlete_id)
+def prepare_data(all_activities: list[dict]) -> tuple:
     cutoff = datetime.now() - timedelta(days=DAYS_BACK)
     activities = [
         act
@@ -229,13 +214,16 @@ def prepare_data(access_token: str, athlete_id: int) -> tuple:
 def viz_weekly_chart(
     weekly_data: pandas.DataFrame,
 ) -> dict:
+    domain = padded_time_domain(weekly_data.index)
+    full_weeks = pandas.date_range(domain[0], domain[1], freq="W")
+    weekly_data = weekly_data.reindex(full_weeks).fillna(0.0)
+    weekly_data.index.name = "start_date"
+
     upper_limit = max(weekly_data["distance_km"].max(), 20)
 
     x = alt.X(
         "start_date:T",
-        scale=alt.Scale(
-            domain=padded_time_domain(weekly_data.index), padding=20
-        ),
+        scale=alt.Scale(domain=domain, padding=20),
         axis=alt.Axis(format="%b %d", tickCount="week"),
         title="Week",
     )
@@ -360,8 +348,9 @@ def running_heatmap(daily_df: pandas.DataFrame) -> dict:
         ]
     ].copy()
 
-    domain = padded_time_domain(heatmap_data.index)
-    all_days = pandas.date_range(domain[0], domain[1], freq="D")
+    heatmap_end = heatmap_data.index.max()
+    heatmap_start = heatmap_end - timedelta(days=DAYS_BACK)
+    all_days = pandas.date_range(heatmap_start, heatmap_end, freq="D")
     heatmap_data = heatmap_data.reindex(all_days).fillna(0.0)
     heatmap_data["day_of_the_week_name"] = heatmap_data.index.strftime("%a")
     heatmap_data["week_start"] = heatmap_data.index - pandas.to_timedelta(
@@ -786,9 +775,7 @@ def get_visualizations(
         return cached
 
     all_activities = fetch_all_activities(access_token, athlete_id=athlete_id)
-    weekly_data, daily_df, running_activities = prepare_data(
-        access_token, athlete_id=athlete_id
-    )
+    weekly_data, daily_df, running_activities = prepare_data(all_activities)
     logger.info("Prepared data.")
 
     tanda_series = daily_df["rolling_tanda_day"].dropna()

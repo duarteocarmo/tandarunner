@@ -29,7 +29,7 @@ def refresh_token(access_token):
     response = requests.post("https://www.strava.com/oauth/token", data=params)
 
     if response.status_code != 200:
-        Exception(
+        raise Exception(
             "Unexpected code while refreshing token: %d" % response.status_code
         )
 

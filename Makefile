@@ -20,7 +20,7 @@ check: ## Run all checks (lock, ruff, ty, deptry)
 lint: check ## Alias for check
 
 test: ## Run tests
-	@uv run pytest --cov=src --cov-report xml --log-level=WARNING --disable-pytest-warnings
+	@uv run pytest --cov=tandarunner --cov-report xml --log-level=WARNING --disable-pytest-warnings
 
 migrations: ## Create new database migrations
 	@uv run python manage.py makemigrations
