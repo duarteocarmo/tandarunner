@@ -77,6 +77,22 @@ def get_access_token(user):
     return access_token
 
 
+def get_athlete_data(user) -> dict:
+    """Single entry point for all authenticated athlete data.
+
+    Returns a dict with keys: access_token, athlete, athlete_id, token.
+    Reuses existing caches under the hood.
+    """
+    access_token = get_access_token(user)
+    athlete = get_athlete(access_token)
+    return {
+        "access_token": access_token,
+        "athlete": athlete,
+        "athlete_id": athlete["id"],
+        "token": access_token.token,
+    }
+
+
 def _fetch_activity_chunk(access_token: str, after: int, before: int) -> list:
     url = f"{settings.STRAVA_BASE_URL}/athlete/activities"
     headers = {"Authorization": f"Bearer {access_token}"}

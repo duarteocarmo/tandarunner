@@ -7,7 +7,7 @@ from django.template.response import TemplateResponse
 from django.views.decorators.http import require_http_methods
 from icalendar import Calendar, Event
 
-from tandarunner.helpers import get_access_token, get_athlete
+from tandarunner.helpers import get_athlete_data
 from tandarunner.models import TrainingPlan
 from tandarunner.visualizations import (
     get_dummy_visualizations,
@@ -20,33 +20,25 @@ logger = logging.getLogger(__name__)
 
 @require_http_methods(["GET"])
 def index(request: HttpRequest) -> HttpResponse:
-    user = request.user
-    data = {"athlete": None}
+    if not request.user.is_authenticated:
+        return TemplateResponse(request, "index.html", {"athlete": None})
 
-    if user.is_authenticated:
-        access_token = get_access_token(user)
-        athlete = get_athlete(access_token)
-        data = {"athlete": athlete}
-
-    return TemplateResponse(request, "index.html", data)
+    ad = get_athlete_data(request.user)
+    return TemplateResponse(request, "index.html", {"athlete": ad["athlete"]})
 
 
 @require_http_methods(["GET"])
 def graphs_partial(request: HttpRequest) -> HttpResponse:
-    user = request.user
-
-    if not user.is_authenticated:
-        data = {"visualizations": get_dummy_visualizations()}
+    if not request.user.is_authenticated:
         logger.info("Fetched dummy data for anonymous user.")
-        return TemplateResponse(request, "partials/graphs.html", data)
+        return TemplateResponse(
+            request,
+            "partials/graphs.html",
+            {"visualizations": get_dummy_visualizations()},
+        )
 
-    access_token = get_access_token(user)
-    logger.info("Got access token.")
-
-    athlete = get_athlete(access_token)
-    athlete_id = athlete["id"]
-    results = get_visualizations(access_token.token, athlete_id)
-    stats = get_stats(access_token.token, athlete_id)
+    ad = get_athlete_data(request.user)
+    results = get_visualizations(ad["token"], ad["athlete_id"])
     logger.info("Got athlete data.")
 
     chart_keys = {
@@ -60,15 +52,11 @@ def graphs_partial(request: HttpRequest) -> HttpResponse:
         "visualizations": {
             k: v for k, v in results.items() if k in chart_keys
         },
-        "current_tanda": results["current_tanda"],
-        "current_tanda_pace": results["current_tanda_pace"],
-        "avg_hr_per_km": results["avg_hr_per_km"],
-        "stats": stats,
     }
 
     request.session.update(
         {
-            "athlete": athlete,
+            "athlete": ad["athlete"],
             "running_activities": results["running_activities"],
         }
     )
@@ -79,23 +67,19 @@ def graphs_partial(request: HttpRequest) -> HttpResponse:
 
 @require_http_methods(["GET"])
 def stats_partial(request: HttpRequest) -> HttpResponse:
-    user = request.user
-    data = {}
+    if not request.user.is_authenticated:
+        return TemplateResponse(request, "partials/stats.html", {})
 
-    if user.is_authenticated:
-        access_token = get_access_token(user)
-        athlete = get_athlete(access_token)
-        athlete_id = athlete["id"]
-        results = get_visualizations(access_token.token, athlete_id)
-        stats = get_stats(access_token.token, athlete_id)
-        data = {
-            "stats": stats,
-            "current_tanda": results["current_tanda"],
-            "current_tanda_pace": results["current_tanda_pace"],
-            "avg_hr_per_km": results["avg_hr_per_km"],
-        }
-        logger.info("Prepared stats data.")
-
+    ad = get_athlete_data(request.user)
+    results = get_visualizations(ad["token"], ad["athlete_id"])
+    stats = get_stats(ad["token"], ad["athlete_id"])
+    data = {
+        "stats": stats,
+        "current_tanda": results["current_tanda"],
+        "current_tanda_pace": results["current_tanda_pace"],
+        "avg_hr_per_km": results["avg_hr_per_km"],
+    }
+    logger.info("Prepared stats data.")
     return TemplateResponse(request, "partials/stats.html", data)
 
 
