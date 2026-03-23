@@ -224,7 +224,10 @@ def viz_weekly_chart(
     x = alt.X(
         "start_date:T",
         scale=alt.Scale(domain=domain, padding=20),
-        axis=alt.Axis(format="%b %d", tickCount="week"),
+        axis=alt.Axis(
+            format="%b %d",
+            tickCount=alt.TimeIntervalStep(step=2, interval="week"),
+        ),
         title="Week",
     )
     y = alt.Y(
@@ -292,7 +295,10 @@ def viz_rolling_tanda(daily_df: pandas.DataFrame) -> dict:
         "date:T",
         title="Date",
         scale=alt.Scale(domain=padded_time_domain(daily_df.index), padding=20),
-        axis=alt.Axis(format="%b %d"),
+        axis=alt.Axis(
+            format="%b %d",
+            tickCount=alt.TimeIntervalStep(step=2, interval="week"),
+        ),
     )
     color = "#d65de0"
 
