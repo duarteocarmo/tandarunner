@@ -74,23 +74,23 @@
             </div>
             <div id="tab-graphs"
                  hx-get="{% url 'graphs_partial' %}"
-                 hx-trigger="load"
+                 hx-trigger="load once"
                  hx-swap="innerHTML">
                 <div class="loading">Loading...</div>
             </div>
             <div id="tab-stats" class="tab-pane-hidden"
                  hx-get="{% url 'stats_partial' %}"
-                 hx-trigger="load"
+                 hx-trigger="load once"
                  hx-swap="innerHTML">
             </div>
             <div id="tab-chat" class="tab-pane-hidden"
                  hx-get="{% url 'chat_partial' %}"
-                 hx-trigger="load"
+                 hx-trigger="load once"
                  hx-swap="innerHTML">
             </div>
             <div id="tab-plan" class="tab-pane-hidden"
                  hx-get="{% url 'plan_partial' %}"
-                 hx-trigger="load"
+                 hx-trigger="load once"
                  hx-swap="innerHTML">
             </div>
             <footer class="footer">
